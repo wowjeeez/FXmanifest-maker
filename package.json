@@ -7,10 +7,13 @@
     },
     "dependencies": {
         "electron": "^10.1.5",
+        "electron-builder": "^22.9.1",
         "jquery": "^3.5.1"
     },
     "devDependencies": {
         "deploy-to-git": "^0.1.5"
     },
-    "publishConfig": { "registry": "https://npm.pkg.github.com/" }
+    "publishConfig": {
+        "registry": "https://npm.pkg.github.com/"
+    }
 }

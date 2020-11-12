@@ -7,7 +7,6 @@
     },
     "dependencies": {
         "electron": "^10.1.5",
-        "electron-builder": "^22.9.1",
         "jquery": "^3.5.1"
     },
     "devDependencies": {

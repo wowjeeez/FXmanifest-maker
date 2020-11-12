@@ -11,5 +11,6 @@
     },
     "devDependencies": {
         "deploy-to-git": "^0.1.5"
-    }
+    },
+    "publishConfig": { "registry": "https://npm.pkg.github.com/" }
 }

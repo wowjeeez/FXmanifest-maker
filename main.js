@@ -14,7 +14,7 @@ function createWindow() {
             webPreferences: {
                 nodeIntegration: true
             },
-            icon: __dirname + '/favicon.png',
+            icon: __dirname + '/buildResources/favicon.png',
             backgroundColor: "#3e4247",
         })
         //win.webContents.openDevTools()

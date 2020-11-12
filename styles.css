@@ -1,0 +1,89 @@
+html {
+    font-family: 'Montserrat', sans-serif;
+}
+
+h1 {
+    text-align: center;
+    color: ivory;
+}
+
+.open {
+    font-family: 'Montserrat', sans-serif;
+    margin: 0 auto;
+    padding: 10px;
+    opacity: 0.8;
+    border: 2px solid;
+    border-color: rgb(250, 0, 96);
+    background-color: lightcoral;
+    height: 10%;
+    border-radius: 3px;
+    color: ivory;
+    font-size: 35px;
+}
+
+.open:hover {
+    box-shadow: 8 8 10px rgb(250, 0, 96);
+    outline-width: 0;
+    border-color: ivory;
+}
+
+.fxvl {
+    color: ivory;
+}
+
+#fxv,
+#author,
+#descr,
+#game {
+    outline-width: 0;
+}
+
+#descr {
+    width: 50%;
+}
+
+.next {
+    font-family: 'Montserrat', sans-serif;
+    margin: 0 auto;
+    padding: 8px;
+    opacity: 0.8;
+    border: 2px solid;
+    border-color: rgb(250, 0, 96);
+    background-color: lightcoral;
+    height: 10%;
+    border-radius: 3px;
+    color: ivory;
+    font-size: 25px;
+}
+
+.next:hover {
+    box-shadow: 8 8 10px rgb(250, 0, 96);
+    outline-width: 0;
+    border-color: ivory;
+}
+
+.results,
+th,
+td {
+    text-align: center;
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 10px;
+}
+
+.results tr:nth-child(even) {
+    background-color: #eee;
+}
+
+.results tr:nth-child(odd) {
+    background-color: #fff;
+}
+
+.results th {
+    color: white;
+    background-color: lightcoral;
+}

@@ -1,0 +1,15 @@
+{
+    "name": "Fxmanifestmaker",
+    "version": "0.1.0",
+    "main": "main.js",
+    "scripts": {
+        "start": "electron ."
+    },
+    "dependencies": {
+        "electron": "^10.1.5",
+        "jquery": "^3.5.1"
+    },
+    "devDependencies": {
+        "deploy-to-git": "^0.1.5"
+    }
+}

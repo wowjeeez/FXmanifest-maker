@@ -12,10 +12,20 @@
 </head>
 
 <body>
+    <div class="sett">
+        <img src="assets/def.png" class="orig" alt="Def">
+        <img src="assets/hover.png" class="float" alt="Hover">
+    </div>
     <div class="main">
         <h1>Welcome to the Fxmanifest maker's desktop version</h1>
         <center>
             <button class="open">Open your resource</button>
+        </center>
+    </div>
+    <div class="settings" hidden>
+        <h1>WOW</h1>
+        <center>
+
         </center>
     </div>
     <div class="meta" hidden>
@@ -36,11 +46,14 @@
 
   </select> <br> <br>
             <label for="author" class="fxvl">Author</label>
-            <input id="author" type="text" maxlength="15"> <br> <br>
+            <input id="author" type="text" maxlength="40"> <br> <br>
 
             <label for="desc" class="fxvl">Description</label>
-            <input id="descr" type="text" maxlength="60"> <br> <br>
+            <input id="descr" type="text" maxlength="80"> <br> <br>
             <button class="next" id="metaD">Next</button>
+            <button class="next" id="savesettings" hidden>Save settings</button>
+            <button class="next" id="goback" hidden>Back</button>
+
         </center>
 
     </div>
@@ -68,6 +81,7 @@
             <button class="next" id="exit">Exit</button>
         </center>
     </div>
+
 </body>
 
 </html>

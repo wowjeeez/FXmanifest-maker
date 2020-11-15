@@ -6,20 +6,23 @@ const renderer = ("./renderer")
 var win
 const { readFilesSync } = require('./functions')
 const pattern = `(?<=MANIF:).*`
+const { buildSettings, setSetting, getSetting } = require("./settings")
+const { Accessor, Table, Inserter, Query } = require("./onboard/main")
 
 function createWindow() {
     win = new BrowserWindow({
-            width: 800,
-            height: 600,
-            webPreferences: {
-                nodeIntegration: true
-            },
-            icon: __dirname + '/buildResources/favicon.png',
-            backgroundColor: "#3e4247",
-        })
-        //win.webContents.openDevTools()
+        width: 800,
+        height: 600,
+        webPreferences: {
+            nodeIntegration: true
+        },
+        icon: __dirname + '/buildResources/favicon.png',
+        backgroundColor: "#3e4247",
+    })
+    win.webContents.openDevTools()
     win.setMenuBarVisibility(false)
     win.loadFile('index.html')
+    buildSettings()
 
 }
 
@@ -48,7 +51,21 @@ ipcMain.on("openFolder", (event, ar) => {
         rel = folder[0]
         console.log("Path: " + rel)
         files = readFilesSync(rel)
-        event.reply("openForm")
+        if (!getSetting("buildData", "autoBuild")) {
+            event.reply("openForm")
+        } else {
+            console.log("Autobuilding manifest")
+            const settings = getSetting("buildData")
+            event.reply("redir", {
+                    __name: "metadata",
+                    fxv: settings.version,
+                    game: settings.games,
+                    auth: settings.author,
+                    descr: settings.description,
+                    instant: true,
+                }) //cant send events from here so redirect back to the renderer
+
+        }
     }
 
 })
@@ -62,6 +79,7 @@ var metadata
 ipcMain.on("metadata", (event, arg) => {
     console.log("Parsing files...")
     metadata = arg
+    arg.instant = arg.instant || false
     files.forEach(file => {
         const buff = fs.readFileSync(file)
         const content = buff.toString()
@@ -103,10 +121,18 @@ ipcMain.on("metadata", (event, arg) => {
             console.log("Ignoring file: " + pth)
         }
     })
-    event.reply("parsedFiles", record)
+    if (!arg.instant) {
+        event.reply("parsedFiles", record)
+    } else {
+        event.reply("redir", {
+            __name: "build",
+            instant: true,
+        })
+    }
 })
 ipcMain.on("build", (ev, dat) => {
     console.log("Building manifest file")
+    dat = dat || {}
     var final = `
     fx_version "${metadata.fxv}" 
     games {${metadata.game}}
@@ -123,9 +149,34 @@ ipcMain.on("build", (ev, dat) => {
         ${shared_scripts.join()}} 
     `
     fs.writeFileSync(rel + "/fxmanifest.lua", final)
-    ev.reply("written")
+    if (!dat.instant) {
+        ev.reply("written")
+    } else {
+        ev.reply("parse")
+    }
+
 })
 
 ipcMain.on("exit", (ev, dat) => {
     app.exit()
+})
+
+
+ipcMain.on("getSettings", (ev, dat) => {
+    var settings
+    var tbl = new Accessor("settings")
+    tbl.query({ key: "buildData" }, (res) => {
+        settings = res
+    })
+    ev.reply("settings", settings)
+})
+
+ipcMain.on("setSettings", (ev, data) => {
+    setSetting("buildData", {
+        autoBuild: data.quickMode,
+        version: data.fxv,
+        games: data.game,
+        author: data.auth,
+        description: data.descr,
+    })
 })

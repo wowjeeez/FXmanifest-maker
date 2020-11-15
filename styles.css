@@ -87,3 +87,24 @@ td {
     color: white;
     background-color: lightcoral;
 }
+
+.sett {
+    float: right;
+    top: 0;
+}
+
+.sett .float {
+    display: none;
+}
+
+.sett .orig {
+    display: inline-block;
+}
+
+.sett:hover .float {
+    display: inline-block;
+}
+
+.sett:hover .orig {
+    display: none;
+}

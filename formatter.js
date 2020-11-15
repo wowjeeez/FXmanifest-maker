@@ -9,3 +9,4 @@ function format(arr) {
     return arr
 }
 module.exports = { format }
+    //for some strange reason I put this into a separate file I have no idea why

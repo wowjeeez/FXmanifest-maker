@@ -1,12 +1,13 @@
 const fs = require("fs")
+const userdir = require("../main")
 class Query {
     constructor(table) {
         this.table = table
     }
     query = function(prop, cb) {
         const table = this.table
-        if (fs.existsSync(__dirname + `/storage/${table}.json`)) {
-            const raw = JSON.parse(fs.readFileSync(__dirname + `/storage/${table}.json`))
+        if (fs.existsSync(userdir + `/${table}.json`)) {
+            const raw = JSON.parse(fs.readFileSync(userdir + `/${table}.json`))
             if (prop.whole) {
                 cb(raw)
             }
@@ -36,8 +37,8 @@ class Query {
     }
     delete = function(prop) {
         const table = this.table
-        if (fs.existsSync(__dirname + `/storage/${table}.json`)) {
-            const raw = JSON.parse(fs.readFileSync(__dirname + `/storage/${table}.json`))
+        if (fs.existsSync(userdir + `/${table}.json`)) {
+            const raw = JSON.parse(fs.readFileSync(userdir + `/${table}.json`))
             if (prop.whole) {
                 raw = {}
             }
@@ -58,19 +59,19 @@ class Query {
                     raw[prop.key][key] = null
                 }
             }
-            fs.writeFileSync(__dirname + `/storage/${table}.json`, JSON.stringify(raw, null, 2));
+            fs.writeFileSync(userdir + `/${table}.json`, JSON.stringify(raw, null, 2));
         } else {
             //(`^1 [ERROR]: Table doesn't exist`)
         }
     }
     update(key, data) {
         const table = this.table
-        if (fs.existsSync(__dirname + `/storage/${table}.json`)) {
-            const raw = JSON.parse(fs.readFileSync(__dirname + `/storage/${table}.json`))
+        if (fs.existsSync(userdir + `/${table}.json`)) {
+            const raw = JSON.parse(fs.readFileSync(userdir + `/${table}.json`))
             for (const [k, value] of Object.entries(data)) {
                 raw[key][k] = value
             }
-            fs.writeFileSync(__dirname + `/storage/${table}.json`, JSON.stringify(raw, null, 2));
+            fs.writeFileSync(userdir + `/${table}.json`, JSON.stringify(raw, null, 2));
         } else {
             //(`^1 [ERROR]: Table doesn't exist`)
 
@@ -84,11 +85,11 @@ class Inserter extends Query {
         this.name = name
     }
     insert = function(key, overwrite, data) {
-        if (fs.existsSync(__dirname + `/storage/${this.name}.json`)) {
-            this.loaded = JSON.parse(fs.readFileSync(__dirname + `/storage/${this.name}.json`))
+        if (fs.existsSync(userdir + `/${this.name}.json`)) {
+            this.loaded = JSON.parse(fs.readFileSync(userdir + `/${this.name}.json`))
             if (!this.loaded[key] || overwrite) {
                 this.loaded[key] = data
-                fs.writeFileSync(__dirname + `/storage/${this.name}.json`, JSON.stringify(this.loaded, null, 2));
+                fs.writeFileSync(userdir + `/${this.name}.json`, JSON.stringify(this.loaded, null, 2));
             } else {
                 //(`^1 [ERROR]: Duplicate key detected and overwriting is not allowed`)
             }
@@ -108,8 +109,8 @@ class Table extends Accessor {
     constructor(name, overwrite = false, data) {
         super(name)
         const obj = data || {}
-        if (!fs.existsSync(__dirname + `/storage/${name}.json`) || overwrite) {
-            fs.writeFileSync(__dirname + `/storage/${name}.json`, JSON.stringify(obj, null, 2), err => {
+        if (!fs.existsSync(userdir + `/${name}.json`) || overwrite) {
+            fs.writeFileSync(userdir + `/${name}.json`, JSON.stringify(obj, null, 2), err => {
                 if (err) {
                     //(`^1Error occured: ${err}`)
                 } else {

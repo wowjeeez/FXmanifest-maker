@@ -6,11 +6,15 @@ const renderer = ("./renderer")
 var win
 const { readFilesSync } = require('./functions')
 const pattern = `(?<=MANIF:).*`
+const userdir = app.getPath("appData")
+module.exports = userdir
 const { buildSettings, setSetting, getSetting } = require("./settings")
+
+
 const { Accessor, Table, Inserter, Query } = require("./onboard/main")
 const { format } = require("./formatter")
-try {
 
+try {
     function createWindow() {
         var title
         if (getSetting("buildData", "autoBuild")) {

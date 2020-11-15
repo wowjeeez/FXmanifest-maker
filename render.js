@@ -1,4 +1,4 @@
-const { ipcRenderer } = require('electron')
+const { ipcRenderer, dialog } = require('electron')
 var active = ".main"
 var last //only used when going back from the settings
 var setting = false
@@ -204,3 +204,6 @@ ipcRenderer.on("parse", (event) => {
 ipcRenderer.on("redir", (ev, data) => {
     ipcRenderer.send(data.__name, data)
 })
+window.onerror = function(message, source, line, col, err) {
+    dialog.showMessageBox(`An error occured (${message})in script: ${source}, at line: ${line}, at char: ${col}`);
+}

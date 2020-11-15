@@ -8,6 +8,7 @@ const { readFilesSync } = require('./functions')
 const pattern = `(?<=MANIF:).*`
 const { buildSettings, setSetting, getSetting } = require("./settings")
 const { Accessor, Table, Inserter, Query } = require("./onboard/main")
+const { format } = require("./formatter")
 
 function createWindow() {
     var title
@@ -140,21 +141,13 @@ ipcMain.on("metadata", (event, arg) => {
 ipcMain.on("build", (ev, dat) => {
     console.log("Building manifest file")
     dat = dat || {}
-    var final = `
-    fx_version "${metadata.fxv}" 
-    games {${metadata.game}}
-    author "${metadata.auth}" 
-    description "(Made with FXmanifest maker) ${metadata.descr}" 
-    ui_page ${ui_page} 
-    files {
-        ${_files.join()}} \n 
-    client_scripts {
-        ${client_scripts.join()}} 
-    server_scripts {
-        ${server_scripts.join()}} 
-    shared_scripts {
-        ${shared_scripts.join()}} 
-    `
+        //formatting the file
+    var final = `--Made with: fxmanifest-maker (https://github.com/LedAndris/FXmanifest-maker)
+fx_version "${metadata.fxv}" 
+games {${metadata.game}}
+author "${metadata.auth}" 
+description "${metadata.descr}"
+ui_page ${ui_page}files ${format(_files).join("")}client_scripts ${format(client_scripts).join("")}server_scripts ${format(server_scripts).join("")}shared_scripts ${format(shared_scripts).join("")}`
     fs.writeFileSync(rel + "/fxmanifest.lua", final)
     if (!dat.instant) {
         ev.reply("written")

@@ -86,6 +86,11 @@ $(() => {
         $(".sett").hide()
         $(active).hide() //TODO! all .hide(), .show() should use the active variable instead of hardcoded values but nah too much work (10 seconds) and I love inconsistent code, also there should be only one .click event and do checks there for the currently clicked button
         last = active
+        $(".meta").show()
+        $(".meta h1").hide()
+        $(".meta #metaD").hide()
+        $(".meta #goback").show()
+        $(".meta #savesettings").show()
 
         if (active == ".meta") {
             var game = $("#game").val()

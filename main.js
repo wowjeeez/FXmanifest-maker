@@ -10,20 +10,27 @@ const { buildSettings, setSetting, getSetting } = require("./settings")
 const { Accessor, Table, Inserter, Query } = require("./onboard/main")
 
 function createWindow() {
+    var title
+    if (getSetting("buildData", "autoBuild")) {
+        title = "Fxmanifest maker (quick manifest making is enabled)"
+    } else {
+        title = "Fxmanifest maker (quick manifest making is disabled)"
+
+    }
     win = new BrowserWindow({
-        width: 800,
-        height: 600,
-        webPreferences: {
-            nodeIntegration: true
-        },
-        icon: __dirname + '/buildResources/favicon.png',
-        backgroundColor: "#3e4247",
-    })
-    win.webContents.openDevTools()
+            width: 800,
+            height: 600,
+            webPreferences: {
+                nodeIntegration: true
+            },
+            title: title,
+            icon: 'assets/icon.png',
+            backgroundColor: "#3e4247",
+        })
+        //win.webContents.openDevTools()
     win.setMenuBarVisibility(false)
     win.loadFile('index.html')
     buildSettings()
-
 }
 
 app.whenReady().then(createWindow)
@@ -179,4 +186,10 @@ ipcMain.on("setSettings", (ev, data) => {
         author: data.auth,
         description: data.descr,
     })
+    if (data.quickMode) {
+        win.setTitle("Fxmanifest maker (quick manifest making is enabled)")
+    } else {
+        win.setTitle("Fxmanifest maker (quick manifest making is disabled)")
+
+    }
 })

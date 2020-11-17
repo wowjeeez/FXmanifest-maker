@@ -13,4 +13,5 @@ If the filename includes: <br>
 `server`: will be considered as a server script <br>
 `shared`: will be considered as a shared script <br>
 **If the filename is `index.html` it will be considered as the UI page.** <br>
+
 If you open the `settings` (gear icon) tab you will see an option called *One click manifest creation*, if you enable that, the meta entries specified below will be used, skipping the manifest data and the finalizing page when creating a new manifest (so it will take less time to create a manifest).

@@ -1,7 +1,7 @@
 # FXmanifest-maker
 ![Build/release](https://github.com/LedAndris/FXmanifest-maker/workflows/Build/release/badge.svg) 
 # 
-To hook files, you need to include any of these in your files: (any filetype, with any prefix (like //, --, # etc))
+To hook files, you need to include any of these in your files: (any filetype, with any prefix (like //, --, # etc)) <br>
 `MANIF:CL` for client scripts <br>
 `MANIF:SV` for server scripts <br>
 `MANIF:SH` for shared scripts <br>

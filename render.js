@@ -67,7 +67,8 @@ $(() => {
             fxv: $("#fxv").val(),
             game: game,
             auth: $("#author").val() || "no one",
-            descr: $("#descr").val() || "nothing"
+            descr: $("#descr").val() || "nothing",
+            filenames: $("#filename").is(':checked')
         }
         ipcRenderer.send("metadata", meta)
         $(".meta").fadeOut(100, () => {
@@ -106,6 +107,7 @@ $(() => {
                 game: game,
                 auth: $("#author").val() || "no one",
                 descr: $("#descr").val() || "nothing",
+                filenames: $("#filename").is(':checked')
             }
         }
         active = ".sett"
@@ -129,7 +131,8 @@ $(() => {
             game: game,
             auth: $("#author").val() || "no one",
             descr: $("#descr").val() || "nothing",
-            quickMode: $("#quickmode").is(':checked')
+            quickMode: $("#quickmode").is(':checked'),
+            filenames: $("#filename").is(':checked')
         }
 
         ipcRenderer.send("setSettings", meta)
@@ -147,7 +150,7 @@ ipcRenderer.on("settings", (ev, data) => {
     <input type="checkbox" id="quickmode" name="quickmode" value="Quick mode"> <br><br>
     </div>
     </center>
-    `)
+    `) //honestly who needs react?
     var game = data.games.charAt(0).toUpperCase() + data.games.slice(1) //conversion
     if (game == `"gta5", "rdr3"`) {
         game = "both"
@@ -161,7 +164,9 @@ ipcRenderer.on("settings", (ev, data) => {
     $(".meta #metaD").hide() //filling the settings form with the data read from the settings file
     $(".meta #fxv").val(data.version.charAt(0).toUpperCase() + data.version.slice(1) || "Cerulean").change()
     $(".meta #game").val(game).change()
+    console.log(data)
     $("#quickmode").prop("checked", data.autoBuild || false)
+    $("#filename").prop("checked", data.readFromName || true)
     $(".meta #author").val(data.author)
     $(".meta #descr").val(data.description)
     $(".meta #savesettings").show()

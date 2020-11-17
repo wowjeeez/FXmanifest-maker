@@ -2,9 +2,10 @@ const { Accessor, Table, Inserter, Query } = require("./onboard/main")
 
 function buildSettings() {
 
-    const settings = new Table("settings", false, {
+    new Table("settings", false, {
         buildData: {
-            autoBuild: false,
+            autoBuild: true,
+            readFromName: true,
             version: "",
             games: "",
             author: "",

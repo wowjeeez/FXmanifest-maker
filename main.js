@@ -75,6 +75,7 @@ try {
                         game: settings.games,
                         auth: settings.author,
                         descr: settings.description,
+                        filenames: settings.readFromName,
                         instant: true,
                     }) //cant send events from here so redirect back to the renderer
 
@@ -97,7 +98,7 @@ try {
             const buff = fs.readFileSync(file)
             const content = buff.toString()
             var type = content.match(pattern)
-            console.log(`Filetype: ${type}`)
+            console.log(`File: ${file}`)
             if (type != null || type != undefined) {
                 type = type.toString().replace(/ /g, '')
             }
@@ -129,9 +130,49 @@ try {
                         console.log("Pushing file")
                         _files.push(`'${pth}', \n`)
                         record.push({ name: pth, type: "file" })
+                        break
                 }
             } else {
-                console.log("Ignoring file: " + pth)
+                if (getSetting("buildData", "readFromName") && metadata.filenames || metadata.filenames) {
+                    console.log("Checking filenames (the setting is on)")
+                    var m = pth.match(`.*(?=\/)`)
+                    if (m) {
+                        //if the file is in a subfolder then get only the filename to avoid folder name issues
+                        m = m.toString()
+                        m = pth.replace(m, "").replace(`/`, "")
+                    } else {
+                        m = pth
+                    }
+                    if (m == "index.html") {
+                        console.log("Found index.html, pusing it as UI page")
+                        ui_page = `'${pth}' \n`
+                        record.push({ name: pth, type: "ui" })
+                    }
+                    m = m.match(/^.*?(?=\.)/).toString() //basic string regex didnt work here lol
+                        //switch statements didnt work here (because we dont check the string literally)
+                    if (m.includes("server")) {
+                        console.log("Pushing server script")
+                        server_scripts.push(`'${pth}', \n`)
+                        record.push({ name: pth, type: "server" })
+
+                    } else if (m.includes("client")) {
+                        console.log("Pushing client script")
+                        client_scripts.push(`'${pth}', \n`)
+                        record.push({ name: pth, type: "client" })
+
+                    } else if (m.includes("shared")) {
+                        console.log("Pushing shared script")
+                        shared_scripts.push(`'${pth}', \n`)
+                        record.push({ name: pth, type: "shared" })
+                    } else {
+                        if (!pth.includes("index.html")) {
+                            console.log("Ignoring file: " + pth)
+                        }
+                    }
+                } else {
+                    console.log("File name reading is off, ignoring file: " + pth)
+                }
+
             }
         })
         if (!arg.instant) {
@@ -143,8 +184,16 @@ try {
             })
         }
     })
+    console.log(`Ui page: ${ui_page}`)
     ipcMain.on("build", (ev, dat) => {
         console.log("Building manifest file")
+            //prevent undefined entries
+        if (ui_page) {
+            console.log("Parsing ui page")
+            ui_page = "ui_page " + ui_page
+        } else {
+            ui_page = ""
+        }
         dat = dat || {}
             //formatting the file
         var final = `--Made with: fxmanifest-maker (https://github.com/LedAndris/FXmanifest-maker)
@@ -152,7 +201,7 @@ fx_version "${metadata.fxv}"
 games {${metadata.game}}
 author "${metadata.auth}" 
 description "${metadata.descr}"
-ui_page ${ui_page}files ${format(_files).join("")}client_scripts ${format(client_scripts).join("")}server_scripts ${format(server_scripts).join("")}shared_scripts ${format(shared_scripts).join("")}`
+${ui_page}files ${format(_files).join("")}client_scripts ${format(client_scripts).join("")}server_scripts ${format(server_scripts).join("")}shared_scripts ${format(shared_scripts).join("")}`
 
         fs.writeFileSync(rel + "/fxmanifest.lua", final)
         if (!dat.instant) {
@@ -180,6 +229,7 @@ ui_page ${ui_page}files ${format(_files).join("")}client_scripts ${format(client
     ipcMain.on("setSettings", (ev, data) => {
         setSetting("buildData", {
             autoBuild: data.quickMode,
+            readFromName: data.filenames,
             version: data.fxv,
             games: data.game,
             author: data.auth,

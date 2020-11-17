@@ -7,5 +7,10 @@ To hook files, you need to include any of these in your files: (any filetype, wi
 `MANIF:SH` for shared scripts <br>
 `MANIF:FILE` for a standard file (`files`) entry <br>
 `MANIF:UIP` for the UI page <br>
-#### Determining entry from file names (for example DLLs) is planned
+## Determining entry type from filenames:
+If the filename includes: <br>
+`client`: will be considered as a client script <br>
+`server`: will be considered as a server script <br>
+`shared`: will be considered as a shared script <br>
+**If the filename is `index.html` it will be considered as the UI page.** <br>
 If you open the `settings` (gear icon) tab you will see an option called *One click manifest creation*, if you enable that, the meta entries specified below will be used, skipping the manifest data and the finalizing page when creating a new manifest (so it will take less time to create a manifest).

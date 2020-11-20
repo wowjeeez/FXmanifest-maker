@@ -150,17 +150,17 @@ try {
                     }
                     m = m.match(/^.*?(?=\.)/).toString() //basic string regex didnt work here lol
                         //switch statements didnt work here (because we dont check the string literally)
-                    if (m.includes("server")) {
+                    if (m.includes("server") || m.includes("SV")) {
                         console.log("Pushing server script")
                         server_scripts.push(`'${pth}', \n`)
                         record.push({ name: pth, type: "server" })
 
-                    } else if (m.includes("client")) {
+                    } else if (m.includes("client") || m.includes("CL")) {
                         console.log("Pushing client script")
                         client_scripts.push(`'${pth}', \n`)
                         record.push({ name: pth, type: "client" })
 
-                    } else if (m.includes("shared")) {
+                    } else if (m.includes("shared") || m.includes("SH")) {
                         console.log("Pushing shared script")
                         shared_scripts.push(`'${pth}', \n`)
                         record.push({ name: pth, type: "shared" })

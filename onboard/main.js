@@ -1,5 +1,5 @@
 const fs = require("fs")
-const userdir = require("../main")
+const userdir = require("../core/main")
 class Query {
     constructor(table) {
         this.table = table

@@ -1,4 +1,4 @@
-const { Accessor, Table, Inserter, Query } = require("./onboard/main")
+const { Accessor, Table, Inserter, Query } = require("../onboard/main")
 
 function buildSettings() {
 

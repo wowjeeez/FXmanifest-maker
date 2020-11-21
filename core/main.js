@@ -10,8 +10,7 @@ const userdir = app.getPath("appData")
 module.exports = userdir
 const { buildSettings, setSetting, getSetting } = require("./settings")
 
-
-const { Accessor, Table, Inserter, Query } = require("./onboard/main")
+const { Accessor, Table, Inserter, Query } = require("../onboard/main")
 const { format } = require("./formatter")
 
 try {
@@ -35,7 +34,7 @@ try {
             })
             //win.webContents.openDevTools()
         win.setMenuBarVisibility(false)
-        win.loadFile('index.html')
+        win.loadFile('../index.html')
         buildSettings()
     }
 
@@ -184,8 +183,8 @@ try {
             })
         }
     })
-    console.log(`Ui page: ${ui_page}`)
     ipcMain.on("build", (ev, dat) => {
+        console.log(`Ui page: ${ui_page}`)
         console.log("Building manifest file")
             //prevent undefined entries
         if (ui_page) {

@@ -179,6 +179,7 @@ try {
     app.on('window-all-closed', () => {
         if (process.platform !== 'darwin') {
             app.quit()
+            console.log(`App closed, all systems have been shut down`)
         }
     })
 

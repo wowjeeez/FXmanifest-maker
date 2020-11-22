@@ -170,8 +170,8 @@ try {
             })
             //win.webContents.openDevTools()
         win.setMenuBarVisibility(false)
-        win.loadFile('../index.html'),
-            invokeAPI()
+        win.loadFile('../index.html')
+        invokeAPI()
         hookCLI()
         buildSettings(userdir) //exports werent working as imagined
     }

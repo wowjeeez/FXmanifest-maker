@@ -42,7 +42,7 @@ function back() {
     console.log(`Showing: ${last}`)
     $(last).show()
 }
-
+//lol
 $(() => {
     $(".main").fadeIn(500)
     $(".meta").hide()

@@ -9,6 +9,7 @@ var win
 const { readFilesSync } = require('./functions')
 const pattern = `(?<=MANIF:).*`
 const userdir = app.getPath("appData")
+const { hookCLI } = require('../cli/cli')
 
 function prebuild(dir) {
     rel = dir
@@ -171,6 +172,7 @@ try {
         win.setMenuBarVisibility(false)
         win.loadFile('../index.html'),
             invokeAPI()
+        hookCLI()
         buildSettings(userdir) //exports werent working as imagined
     }
 

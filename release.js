@@ -16,6 +16,14 @@ if (last == 9) {
 } else {
     last += 1
 }
+
+function sleep(milliseconds) {
+    const date = Date.now();
+    let currentDate = null;
+    do {
+        currentDate = Date.now();
+    } while (currentDate - date < milliseconds);
+}
 const newV = `${first}.${middle}.${last}`
 console.log(`New version parsed: ${newV}`)
 package.version = newV
@@ -31,7 +39,7 @@ exec(`git commit -a -m "This is an automatic release"`, (error, stdout, stderr) 
     }
     console.log(`stdout: ${stdout}`)
 })
-
+sleep(5000)
 exec(`git tag v${newV}`, (error, stdout, stderr) => {
     if (error) {
         console.log(`error: ${error.message}`);
@@ -42,17 +50,18 @@ exec(`git tag v${newV}`, (error, stdout, stderr) => {
         return;
     }
     console.log(`stdout: ${stdout}`);
-    exec(`git push`, (error, stdout, stderr) => {
-        if (error) {
-            console.log(`error: ${error.message}`);
-            return;
-        }
-        if (stderr) {
-            console.log(`stderr: ${stderr}`);
-            return;
-        }
-        console.log(`stdout: ${stdout}`);
-    })
+})
+sleep(5000)
+exec(`git push`, (error, stdout, stderr) => {
+    if (error) {
+        console.log(`error: ${error.message}`);
+        return;
+    }
+    if (stderr) {
+        console.log(`stderr: ${stderr}`);
+        return;
+    }
+    console.log(`stdout: ${stdout}`);
 })
 
 

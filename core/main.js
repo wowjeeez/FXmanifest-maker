@@ -1,5 +1,4 @@
 const { app, BrowserWindow, dialog, ipcMain } = require('electron')
-const { invokeAPI } = require('../cli/binder')
 const { buildSettings, setSetting, getSetting } = require("./settings")
 const fs = require('fs')
 const path = require('path')
@@ -9,7 +8,6 @@ var win
 const { readFilesSync } = require('./functions')
 const pattern = `(?<=MANIF:).*`
 const userdir = app.getPath("appData")
-const { hookCLI } = require('../cli/cli')
 
 function prebuild(dir) {
     rel = dir
@@ -171,8 +169,6 @@ try {
             //win.webContents.openDevTools()
         win.setMenuBarVisibility(false)
         win.loadFile('../index.html')
-        invokeAPI()
-        hookCLI()
         buildSettings(userdir) //exports werent working as imagined
     }
 
@@ -204,15 +200,22 @@ try {
             rel = folder[0]
             console.log("Path: " + rel)
             files = readFilesSync(rel)
+            const settings = getSetting("buildData")
             if (!getSetting("buildData", "autoBuild")) {
-                event.reply("openForm")
+                event.reply("openForm", {
+                    version: settings.version,
+                    games: settings.games,
+                    auth: settings.author,
+                    descr: settings.description,
+                    filenames: settings.readFromName,
+                    instant: true,
+                })
             } else {
                 console.log("Autobuilding manifest")
-                const settings = getSetting("buildData")
                 event.reply("redir", {
                         __name: "metadata",
-                        fxv: settings.version,
-                        game: settings.games,
+                        version: settings.version,
+                        games: settings.games,
                         auth: settings.author,
                         descr: settings.description,
                         filenames: settings.readFromName,

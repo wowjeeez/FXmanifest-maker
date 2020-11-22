@@ -150,7 +150,7 @@ ipcRenderer.on("settings", (ev, data) => {
     <input type="checkbox" id="quickmode" name="quickmode" value="Quick mode"> <br><br>
     </div>
     </center>
-    `) //honestly who needs react?
+    `) //honestly who needs react or vue?
     var game = data.games.charAt(0).toUpperCase() + data.games.slice(1) //conversion
     if (game == `"gta5", "rdr3"`) {
         game = "both"
@@ -175,7 +175,21 @@ ipcRenderer.on("settings", (ev, data) => {
 ipcRenderer.on("openForm", (event, data) => {
     $(".main").fadeOut(500, () => {
         active = ".meta"
+        var game = data.games.charAt(0).toUpperCase() + data.games.slice(1) //conversion
+        if (game == `"gta5", "rdr3"`) {
+            game = "both"
+        }
+        if (game == "'common'") {
+            game = "common"
+        }
         $(".meta").fadeIn(500)
+        $(".meta #fxv").val(data.version.charAt(0).toUpperCase() + data.version.slice(1) || "Cerulean").change()
+        $(".meta #game").val(game).change()
+        $("#quickmode").prop("checked", data.autoBuild || false)
+        $("#filename").prop("checked", data.readFromName || true)
+        $(".meta #author").val(data.author)
+        $(".meta #descr").val(data.description)
+
     })
 })
 
@@ -209,6 +223,6 @@ ipcRenderer.on("parse", (event) => {
 ipcRenderer.on("redir", (ev, data) => {
     ipcRenderer.send(data.__name, data)
 })
-window.onerror = function(message, source, line, col, err) {
+Window.onerror = function(message, source, line, col, err) {
     dialog.showMessageBox(`An error occured (${message})in script: ${source}, at line: ${line}, at char: ${col}`);
 }

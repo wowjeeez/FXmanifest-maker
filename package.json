@@ -1,26 +1,27 @@
 {
-  "name": "Fxmanifestmaker",
-  "version": "0.3.0",
-  "main": "core/main.js",
-  "scripts": {
-    "start": "electron ./core/main.js",
-    "pack": "electron-builder --core",
-    "dist": "electron-builder"
-  },
-  "dependencies": {
-    "chalk": "^4.1.0",
-    "commander": "^6.2.0",
-    "jquery": "^3.5.1"
-  },
-  "devDependencies": {
-    "deploy-to-git": "^0.1.5",
-    "electron": "^11.0.2",
-    "electron-builder": "^22.9.1"
-  },
-  "build": {
-    "appId": "1.1.1.1.1"
-  },
-  "settings": {
-    "alpha": true
-  }
+    "name": "Fxmanifestmaker",
+    "version": "0.3.0",
+    "main": "core/main.js",
+    "scripts": {
+        "start": "electron ./core/main.js",
+        "pack": "electron-builder --core",
+        "dist": "electron-builder",
+        "release": "node release.js"
+    },
+    "dependencies": {
+        "chalk": "^4.1.0",
+        "commander": "^6.2.0",
+        "jquery": "^3.5.1"
+    },
+    "devDependencies": {
+        "deploy-to-git": "^0.1.5",
+        "electron": "^11.0.2",
+        "electron-builder": "^22.9.1"
+    },
+    "build": {
+        "appId": "1.1.1.1.1"
+    },
+    "settings": {
+        "alpha": true
+    }
 }

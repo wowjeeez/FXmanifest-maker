@@ -20,7 +20,7 @@ const newV = `${first}.${middle}.${last}`
 console.log(`New version parsed: ${newV}`)
 package.version = newV
 fs.writeFileSync("package.json", JSON.stringify(package, null, 2))
-exec(`git commit -m "This is an automatic release"`, (error, stdout, stderr) => {
+exec(`git commit -a -m "This is an automatic release"`, (error, stdout, stderr) => {
     if (error) {
         console.log(`error: ${error.message}`);
         return;
@@ -43,3 +43,16 @@ exec(`git tag v${newV}`, (error, stdout, stderr) => {
     }
     console.log(`stdout: ${stdout}`);
 })
+exec(`git push`, (error, stdout, stderr) => {
+    if (error) {
+        console.log(`error: ${error.message}`);
+        return;
+    }
+    if (stderr) {
+        console.log(`stderr: ${stderr}`);
+        return;
+    }
+    console.log(`stdout: ${stdout}`);
+})
+
+console.log("Pushed new release")

@@ -1,5 +1,6 @@
 //used internally, not part of the final install
 const fs = require('fs')
+const { GitProcess, GitError, IGitResult } = require('dugite')
 const package = JSON.parse(fs.readFileSync("package.json"))
 const { exec } = require("child_process");
 const v = package.version
@@ -17,29 +18,16 @@ if (last == 9) {
     last += 1
 }
 
-function sleep(milliseconds) {
-    const date = Date.now();
-    let currentDate = null;
-    do {
-        currentDate = Date.now();
-    } while (currentDate - date < milliseconds);
-}
+
 const newV = `${first}.${middle}.${last}`
 console.log(`New version parsed: ${newV}`)
 package.version = newV
 fs.writeFileSync("package.json", JSON.stringify(package, null, 2))
-exec(`git commit -a -m "This is an automatic release"`, (error, stdout, stderr) => {
-    if (error) {
-        console.log(`error: ${error.message}`);
-        return;
-    }
-    if (stderr) {
-        console.log(`stderr: ${stderr}`);
-        return;
-    }
-    console.log(`stdout: ${stdout}`)
-})
-
-
-
+    //need to figure out an async solution for this, to wait until the commit/push completes found the solution like 30 seconds after writing this comment lol
+async function github() {
+    await GitProcess.exec(["commit", "-a", '-m "This is an automatic release"'], __dirname)
+    await GitProcess.exec(["tag", `v${newV}`], __dirname)
+    await GitProcess.exec(["push", "origin"])
+}
+github()
 console.log("Pushed new release")

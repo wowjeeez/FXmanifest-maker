@@ -39,30 +39,6 @@ exec(`git commit -a -m "This is an automatic release"`, (error, stdout, stderr) 
     }
     console.log(`stdout: ${stdout}`)
 })
-sleep(5000)
-exec(`git tag v${newV}`, (error, stdout, stderr) => {
-    if (error) {
-        console.log(`error: ${error.message}`);
-        return;
-    }
-    if (stderr) {
-        console.log(`stderr: ${stderr}`);
-        return;
-    }
-    console.log(`stdout: ${stdout}`);
-})
-sleep(5000)
-exec(`git push`, (error, stdout, stderr) => {
-    if (error) {
-        console.log(`error: ${error.message}`);
-        return;
-    }
-    if (stderr) {
-        console.log(`stderr: ${stderr}`);
-        return;
-    }
-    console.log(`stdout: ${stdout}`);
-})
 
 
 

@@ -1,5 +1,6 @@
 const fs = require("fs")
-const userdir = require("../core/main")
+var userdir
+
 class Query {
     constructor(table) {
         this.table = table
@@ -106,9 +107,11 @@ class Accessor extends Inserter {
 }
 
 class Table extends Accessor {
-    constructor(name, overwrite = false, data) {
+    constructor(name, p, overwrite = false, data) {
         super(name)
+        userdir = p
         const obj = data || {}
+        console.log(`Userdir: ${userdir}`)
         if (!fs.existsSync(userdir + `/${name}.json`) || overwrite) {
             fs.writeFileSync(userdir + `/${name}.json`, JSON.stringify(obj, null, 2), err => {
                 if (err) {

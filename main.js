@@ -1,4 +1,4 @@
-const { app, BrowserWindow, dialog, ipcMain } = require('electron')
+const { app, BrowserWindow, dialog, ipcMain, shell } = require('electron')
 const { buildSettings, setSetting, getSetting } = require("./src/settings")
 const fs = require('fs')
 const path = require('path')
@@ -241,7 +241,10 @@ try {
         app.exit()
     })
 
-
+    ipcMain.on("getVersion", (ev, dat) => {
+        const v = JSON.parse(fs.readFileSync("package.json")).version
+        ev.reply("version", v)
+    })
     ipcMain.on("getSettings", (ev, dat) => {
         var settings
         var tbl = new Accessor("settings")
@@ -267,7 +270,6 @@ try {
 
         }
     })
-
 } catch (err) {
     dialog.showErrorBox("Error during proccess", "Something went wrong while executing, please try again, if the problem persists, then please create an issue on github (error: " + error + ")")
 }

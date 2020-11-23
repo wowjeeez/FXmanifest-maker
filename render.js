@@ -1,4 +1,4 @@
-const { ipcRenderer, dialog } = require('electron')
+const { ipcRenderer, dialog, shell } = require('electron')
 var active = ".main"
 var last //only used when going back from the settings
 var setting = false
@@ -44,6 +44,7 @@ function back() {
 }
 //lol
 $(() => {
+    ipcRenderer.send("getVersion")
     $(".main").fadeIn(500)
     $(".meta").hide()
     $(".parse").hide()
@@ -115,6 +116,10 @@ $(() => {
     })
     $("#goback").click(() => {
         back()
+    })
+    $(".wrapfooter").click(() => {
+        console.log("Opening GitHub page")
+        shell.openExternal("https://github.com/LedAndris/FXmanifest-maker")
     })
     $("#savesettings").click(() => {
         //TODO! Save settings
@@ -222,6 +227,9 @@ ipcRenderer.on("parse", (event) => {
 
 ipcRenderer.on("redir", (ev, data) => {
     ipcRenderer.send(data.__name, data)
+})
+ipcRenderer.on("version", (ev, dat) => {
+    $(".footer").html(`Fxmanifest-maker, version: ${dat}, author: <b class="la">LedAndris</b>`)
 })
 Window.onerror = function(message, source, line, col, err) {
     dialog.showMessageBox(`An error occured (${message})in script: ${source}, at line: ${line}, at char: ${col}`);

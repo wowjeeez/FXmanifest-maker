@@ -164,7 +164,7 @@ try {
                     nodeIntegration: true
                 },
                 title: title,
-                icon: 'assets/icon.png',
+                icon: 'build/icon.png',
                 backgroundColor: "#3e4247",
             })
             //win.webContents.openDevTools()

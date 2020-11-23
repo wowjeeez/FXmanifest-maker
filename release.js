@@ -33,5 +33,5 @@ async function github() {
     console.log(`push: ${proc.stdout}, err: ${proc.stderr}, code: ${proc.exitCode}`)
 
 }
-github() //wip, not fully working
+//github() //wip, not fully working
 console.log("Pushed new release")

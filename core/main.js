@@ -168,7 +168,7 @@ try {
             })
             //win.webContents.openDevTools()
         win.setMenuBarVisibility(false)
-        win.loadFile('../index.html')
+        win.loadFile('index.html')
         buildSettings(userdir) //exports werent working as imagined
     }
 

@@ -9,7 +9,8 @@ const { readFilesSync } = require('./src/functions')
 const pattern = `(?<=MANIF:).*`
 const userdir = app.getPath("appData")
 const { execAddon } = require("./src/workerthrd")
-const v = "0.4.4" //need to figure out an automatization for this, reading from package.json doesn't work on deployment
+const v = app.getVersion()
+
 function prebuild(dir) {
     rel = dir
     console.log("Path: " + rel)

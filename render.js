@@ -180,13 +180,14 @@ ipcRenderer.on("settings", (ev, data) => {
 ipcRenderer.on("openForm", (event, data) => {
     $(".main").fadeOut(500, () => {
         active = ".meta"
-        var game = data.games.charAt(0).toUpperCase() + data.games.slice(1) //conversion
+        var game = data.games.charAt(0).toUpperCase() + data.games.slice(1) || "'gta5'" //conversion
         if (game == `"gta5", "rdr3"`) {
             game = "both"
         }
         if (game == "'common'") {
             game = "common"
         }
+        //TODO! load settings properly when prompted the def manifest input
         $(".meta").fadeIn(500)
         $(".meta #fxv").val(data.version.charAt(0).toUpperCase() + data.version.slice(1) || "Cerulean").change()
         $(".meta #game").val(game).change()

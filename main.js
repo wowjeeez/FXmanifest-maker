@@ -8,6 +8,7 @@ var win
 const { readFilesSync } = require('./src/functions')
 const pattern = `(?<=MANIF:).*`
 const userdir = app.getPath("appData")
+const { execAddon } = require("./src/workerthrd")
 
 function prebuild(dir) {
     rel = dir
@@ -163,13 +164,15 @@ try {
                     nodeIntegration: true
                 },
                 title: title,
-                icon: 'build/icon.png',
+                icon: 'assets/icon.png',
                 backgroundColor: "#3e4247",
             })
             //win.webContents.openDevTools()
         win.setMenuBarVisibility(false)
         win.loadFile('index.html')
         buildSettings(userdir) //exports werent working as imagined
+        console.log("Executing C++")
+        execAddon("hello")
     }
 
     app.whenReady().then(createWindow)

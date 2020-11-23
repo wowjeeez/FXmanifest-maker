@@ -1,6 +1,6 @@
 {
   "name": "Fxmanifestmaker",
-  "version": "0.3.5",
+  "version": "0.3.7",
   "main": "core/main.js",
   "scripts": {
     "start": "electron ./core/main.js",

@@ -25,7 +25,7 @@ package.version = newV
 fs.writeFileSync("package.json", JSON.stringify(package, null, 2))
     //need to figure out an async solution for this, to wait until the commit/push completes found the solution like 30 seconds after writing this comment lol
 async function github() {
-    var proc = await GitProcess.exec(["commit", "-a", '-m "This is an automatic release"'], __dirname)
+    var proc = await GitProcess.exec(["commit", "-a", '-m This is an automatic release'], __dirname)
     console.log(`commit: ${proc.stdout}, err: ${proc.stderr}, code: ${proc.exitCode}`)
     proc = await GitProcess.exec(["tag", `v${newV}`], __dirname)
     console.log(`tag: ${proc.stdout}, err: ${proc.stderr}, code: ${proc.exitCode}`)
@@ -33,5 +33,5 @@ async function github() {
     console.log(`push: ${proc.stdout}, err: ${proc.stderr}, code: ${proc.exitCode}`)
 
 }
-github()
+github() //wip, not fully working
 console.log("Pushed new release")

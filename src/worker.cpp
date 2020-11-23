@@ -7,8 +7,8 @@ using v8::Local;
 using v8::Object;
 using v8::String;
 using v8::Value;
-
-//TODO! update init func
+/*
+//TODO! update init func and fix this shit
 void Method(const FunctionCallbackInfo<Value>& args) {
 	//I hate C++
 	String o();
@@ -23,5 +23,5 @@ void Initialize(Local<Object> exports) {
 
 NODE_MODULE(NODE_GYP_MODULE_NAME, Initialize)
 
+*/
 }
-

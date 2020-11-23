@@ -9,3 +9,5 @@ function execAddon(nm) {
 module.exports = { execAddon }
 
 //node-gyp configure && node-gyp build &&
+
+//"rebuild": "electron-rebuild -f -w FXmanifest-maker"

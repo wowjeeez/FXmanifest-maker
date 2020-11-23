@@ -1,32 +1,32 @@
 {
-    "name": "Fxmanifestmaker",
-    "version": "0.4.1",
-    "main": "main.js",
-    "scripts": {
-        "start": "electron ./main.js",
-        "pack": "electron-builder --core",
-        "dist": "electron-builder",
-        "release": "node release.js",
-        "rebuild": "electron-rebuild -f -w FXmanifest-maker"
-    },
-    "dependencies": {
-        "chalk": "^4.1.0",
-        "commander": "^6.2.0",
-        "dugite": "^1.92.0",
-        "jquery": "^3.5.1",
-        "nan": "^1.9.0"
-    },
-    "devDependencies": {
-        "deploy-to-git": "^0.1.5",
-        "electron": "^11.0.2",
-        "electron-builder": "^22.9.1",
-        "electron-rebuild": "^2.3.2"
-    },
-    "build": {
-        "appId": "1.1.1.1.1",
-        "buildResources": "assets"
-    },
-    "settings": {
-        "alpha": true
-    }
+  "name": "Fxmanifestmaker",
+  "version": "0.4.2",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ./main.js",
+    "pack": "electron-builder --core",
+    "dist": "electron-builder",
+    "release": "node release.js",
+    "rebuild": "electron-rebuild -f -w FXmanifest-maker"
+  },
+  "dependencies": {
+    "chalk": "^4.1.0",
+    "commander": "^6.2.0",
+    "dugite": "^1.92.0",
+    "jquery": "^3.5.1",
+    "nan": "^1.9.0"
+  },
+  "devDependencies": {
+    "deploy-to-git": "^0.1.5",
+    "electron": "^11.0.2",
+    "electron-builder": "^22.9.1",
+    "electron-rebuild": "^2.3.2"
+  },
+  "build": {
+    "appId": "1.1.1.1.1",
+    "buildResources": "assets"
+  },
+  "settings": {
+    "alpha": true
+  }
 }

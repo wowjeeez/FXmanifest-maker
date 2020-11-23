@@ -10,14 +10,24 @@ const pattern = `(?<=MANIF:).*`
 const userdir = app.getPath("appData")
 const { execAddon } = require("./src/workerthrd")
 const v = app.getVersion()
-
-function prebuild(dir) {
+var server_scripts = []
+var shared_scripts = []
+var client_scripts = []
+var _files = []
+var ui_page
+var record = []
+var metadata = {}
+var files //centralized so all "global" variables are declared here
+var rel
+    //reads all the files (not currently used)
+function read(dir) {
     rel = dir
     console.log("Path: " + rel)
     files = readFilesSync(rel)
 }
 
 const handler = function(event, arg) {
+    //handles the file parsing
     console.log("Parsing files...")
     metadata = arg
     arg.instant = arg.instant || false
@@ -62,7 +72,7 @@ const handler = function(event, arg) {
         } else {
             if (getSetting("buildData", "readFromName") && metadata.filenames || metadata.filenames) {
                 console.log("Checking filenames (the setting is on)")
-                var m = pth.match(`.*(?=\/)`)
+                var m = pth.match(`.*(?=\/)`) //check if the path contains / symbols (so not in the root folder)
                 if (m) {
                     //if the file is in a subfolder then get only the filename to avoid folder name issues
                     m = m.toString()
@@ -75,7 +85,7 @@ const handler = function(event, arg) {
                     ui_page = `'${pth}' \n`
                     record.push({ name: pth, type: "ui" })
                 }
-                m = m.match(/^.*?(?=\.)/).toString() //basic string regex didnt work here lol
+                m = m.match(/^.*?(?=\.)/).toString() //we get everything before the first . symbol
                     //switch statements didnt work here (because we dont check the string literally)
                 if (m.includes("server") || m.includes("SV")) {
                     console.log("Pushing server script")
@@ -115,6 +125,7 @@ const handler = function(event, arg) {
 }
 
 const writeManif = function(ev, dat) {
+        //creates the manifest file itself, with the data read by the "handler" func
         console.log(`Ui page: ${ui_page}`)
         console.log("Building manifest file")
             //prevent undefined entries
@@ -143,12 +154,11 @@ ${ui_page}files ${format(_files).join("")}client_scripts ${format(client_scripts
         } catch (err) {}
 
     }
-    //handler functions to call from binder
+    //foundation functions for the binder, the events trigger these
 module.exports = { userdir, handler, prebuild, writeManif }
 
-const { Accessor, Table, Inserter, Query } = require("./onboard/main")
+const { Accessor, Table, Inserter, Query } = require("./onboard/main") //reading the whole settings object caused issues, so I had to make it to read manually
 const { format } = require("./src/formatter")
-
 try {
     function createWindow() {
         var title
@@ -158,6 +168,7 @@ try {
             title = "Fxmanifest maker (quick manifest making is disabled)"
 
         }
+        //constructs the window itself
         win = new BrowserWindow({
                 width: 800,
                 height: 600,
@@ -172,12 +183,12 @@ try {
         win.setMenuBarVisibility(false)
         win.loadFile('index.html')
         buildSettings(userdir) //exports werent working as imagined
-        console.log("Executing C++")
-        execAddon("hello")
+        console.log("Executing C++") //does nothing at the moment
+        execAddon("hello") //does nothing at the moment
     }
 
     app.whenReady().then(createWindow)
-
+        //handles app behavios or based on system events
     app.on('window-all-closed', () => {
         if (process.platform !== 'darwin') {
             app.quit()
@@ -190,73 +201,70 @@ try {
             createWindow()
         }
     })
-    var files
-    var rel
 
 
+    //IPC events are handled here
     ipcMain.on("openFolder", (event, ar) => {
-        console.log("Received event")
-        var folder = dialog.showOpenDialogSync(win, {
-            properties: ['openDirectory']
-        })
+            console.log("Received event")
+            var folder = dialog.showOpenDialogSync(win, {
+                properties: ['openDirectory']
+            })
 
-        if (folder) {
-            rel = folder[0]
-            console.log("Path: " + rel)
-            files = readFilesSync(rel)
-            const settings = getSetting("buildData")
-            if (!getSetting("buildData", "autoBuild")) {
-                event.reply("openForm", {
-                    version: settings.version,
-                    games: settings.games,
-                    auth: settings.author,
-                    descr: settings.description,
-                    filenames: settings.readFromName,
-                    instant: true,
-                })
-            } else {
-                console.log("Autobuilding manifest")
-                event.reply("redir", {
-                        __name: "metadata",
+            if (folder) {
+                rel = folder[0]
+                console.log("Path: " + rel)
+                files = readFilesSync(rel)
+                const settings = getSetting("buildData")
+                if (!getSetting("buildData", "autoBuild")) {
+                    event.reply("openForm", {
                         version: settings.version,
                         games: settings.games,
                         auth: settings.author,
                         descr: settings.description,
                         filenames: settings.readFromName,
                         instant: true,
-                    }) //cant send events from here so redirect back to the renderer
+                    })
+                } else {
+                    console.log("Autobuilding manifest")
+                    event.reply("redir", {
+                            __name: "metadata",
+                            version: settings.version,
+                            games: settings.games,
+                            auth: settings.author,
+                            descr: settings.description,
+                            filenames: settings.readFromName,
+                            instant: true,
+                        }) //cant send events from here so redirect back to the renderer
 
+                }
             }
-        }
 
-    })
-    var server_scripts = []
-    var shared_scripts = []
-    var client_scripts = []
-    var _files = []
-    var ui_page
-    var record = []
-    var metadata = {}
+        })
+        //event handlers are located here (most of them)
+        //functions defined earlier piped to the events
     ipcMain.on("metadata", handler)
 
     ipcMain.on("build", writeManif)
 
     ipcMain.on("exit", (ev, dat) => {
-        app.exit()
-    })
-
+            app.exit()
+        })
+        //this returns the version (v[defined at the top]) to the renderer
     ipcMain.on("getVersion", (ev, dat) => {
         ev.reply("version", v)
     })
-    ipcMain.on("getSettings", (ev, dat) => {
-        var settings
-        var tbl = new Accessor("settings")
-        tbl.query({ key: "buildData" }, (res) => {
-            settings = res
-        })
-        ev.reply("settings", settings)
-    })
 
+
+    //this returns the settings to the renderer
+    ipcMain.on("getSettings", (ev, dat) => {
+            var settings
+            var tbl = new Accessor("settings")
+            tbl.query({ key: "buildData" }, (res) => {
+                settings = res
+            })
+            ev.reply("settings", settings)
+        })
+        //this comes from the UI
     ipcMain.on("setSettings", (ev, data) => {
         setSetting("buildData", {
             autoBuild: data.quickMode,
@@ -266,13 +274,13 @@ try {
             author: data.auth,
             description: data.descr,
         })
-        if (data.quickMode) {
+        if (data.quickMode) { //I was lazy to make a UI display for this, so the quick option's state is only displayed at the window name (currently)
             win.setTitle("Fxmanifest maker (quick manifest making is enabled)")
         } else {
             win.setTitle("Fxmanifest maker (quick manifest making is disabled)")
 
         }
     })
-} catch (err) {
+} catch (err) { //super error handling, worked 1 time
     dialog.showErrorBox("Error during proccess", "Something went wrong while executing, please try again, if the problem persists, then please create an issue on github (error: " + error + ")")
 }

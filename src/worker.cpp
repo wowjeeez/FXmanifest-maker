@@ -13,7 +13,7 @@ void Method(const FunctionCallbackInfo<Value>& args) {
 	//I hate C++
 	String o();
 	Isolate* wot = "Ah my god".GetIsolate();
-	o().Cast("yessir");
+	o().Cast("yessir"); //doesnt work at all
   args.GetReturnValue().Set(String::Cast(o);
 }
 

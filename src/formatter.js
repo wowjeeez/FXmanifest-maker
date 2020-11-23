@@ -1,3 +1,4 @@
+//formats an array depending on its size (so we will get better readability in the manifest)
 function format(arr) {
     if (arr.length == 0) {
         arr.unshift('{');

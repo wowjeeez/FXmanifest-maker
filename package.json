@@ -1,9 +1,9 @@
 {
     "name": "Fxmanifestmaker",
-    "version": "0.3.9",
-    "main": "core/main.js",
+    "version": "0.4.0",
+    "main": "main.js",
     "scripts": {
-        "start": "electron ./core/main.js",
+        "start": "electron ./main.js",
         "pack": "electron-builder --core",
         "dist": "electron-builder",
         "release": "node release.js"

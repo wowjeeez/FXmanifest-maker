@@ -1,11 +1,11 @@
 const { app, BrowserWindow, dialog, ipcMain } = require('electron')
-const { buildSettings, setSetting, getSetting } = require("./settings")
+const { buildSettings, setSetting, getSetting } = require("./src/settings")
 const fs = require('fs')
 const path = require('path')
 const buffer = require('buffer')
 const renderer = ("./renderer")
 var win
-const { readFilesSync } = require('./functions')
+const { readFilesSync } = require('./src/functions')
 const pattern = `(?<=MANIF:).*`
 const userdir = app.getPath("appData")
 
@@ -144,8 +144,8 @@ ${ui_page}files ${format(_files).join("")}client_scripts ${format(client_scripts
     //handler functions to call from binder
 module.exports = { userdir, handler, prebuild, writeManif }
 
-const { Accessor, Table, Inserter, Query } = require("../onboard/main")
-const { format } = require("./formatter")
+const { Accessor, Table, Inserter, Query } = require("./onboard/main")
+const { format } = require("./src/formatter")
 
 try {
     function createWindow() {

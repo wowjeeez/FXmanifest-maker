@@ -125,40 +125,47 @@ const handler = function(event, arg) {
 }
 
 const writeManif = function(ev, dat) {
-        //creates the manifest file itself, with the data read by the "handler" func
-        console.log(`Ui page: ${ui_page}`)
-        console.log("Building manifest file")
-            //prevent undefined entries
-        if (ui_page) {
-            console.log("Parsing ui page")
-            ui_page = "ui_page " + ui_page
-        } else {
-            ui_page = ""
-        }
-        dat = dat || {}
-            //formatting the file
-        var final = `--Made with: fxmanifest-maker (https://github.com/LedAndris/FXmanifest-maker)
+    //creates the manifest file itself, with the data read by the "handler" func
+    console.log(`Ui page: ${ui_page}`)
+    console.log("Building manifest file")
+        //prevent undefined entries
+    if (ui_page) {
+        console.log("Parsing ui page")
+        ui_page = "ui_page " + ui_page
+    } else {
+        ui_page = ""
+    }
+    dat = dat || {}
+        //formatting the file
+    var final = `--Made with: fxmanifest-maker (https://github.com/LedAndris/FXmanifest-maker)
 fx_version "${metadata.fxv.toLowerCase()}" --just in case .toLowerCase()
 games {${metadata.game.toLowerCase()}}
 author "${metadata.auth}" 
 description "${metadata.descr}"
 ${ui_page}files ${format(_files).join("")}client_scripts ${format(client_scripts).join("")}server_scripts ${format(server_scripts).join("")}shared_scripts ${format(shared_scripts).join("")}`
-        fs.writeFileSync(rel + "/fxmanifest.lua", final)
-        try {
-            if (!dat.instant) {
-                ev.reply("written")
-            } else {
-                ev.reply("parse")
-            }
-            return true
-        } catch (err) {}
+    fs.writeFileSync(rel + "/fxmanifest.lua", final)
+    try {
+        if (!dat.instant) {
+            ev.reply("written")
+        } else {
+            ev.reply("parse")
+        }
+        return true
+    } catch (err) {}
 
-    }
-    //foundation functions for the binder, the events trigger these
+}
+
+function prebuild(dir) {
+    rel = dir
+    console.log("Path: " + rel)
+    files = readFilesSync(rel)
+}
+//foundation functions for the binder, the events trigger these
 module.exports = { userdir, handler, prebuild, writeManif }
 
 const { Accessor, Table, Inserter, Query } = require("./onboard/main") //reading the whole settings object caused issues, so I had to make it to read manually
 const { format } = require("./src/formatter")
+
 try {
     function createWindow() {
         var title

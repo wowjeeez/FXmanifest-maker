@@ -138,8 +138,8 @@ const writeManif = function(ev, dat) {
         dat = dat || {}
             //formatting the file
         var final = `--Made with: fxmanifest-maker (https://github.com/LedAndris/FXmanifest-maker)
-fx_version "${metadata.fxv}" 
-games {${metadata.game}}
+fx_version "${metadata.fxv.toLowerCase()}" --just in case .toLowerCase()
+games {${metadata.game.toLowerCase()}}
 author "${metadata.auth}" 
 description "${metadata.descr}"
 ${ui_page}files ${format(_files).join("")}client_scripts ${format(client_scripts).join("")}server_scripts ${format(server_scripts).join("")}shared_scripts ${format(shared_scripts).join("")}`

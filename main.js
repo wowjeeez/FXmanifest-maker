@@ -30,86 +30,90 @@ const handler = function(event, arg) {
     //handles the file parsing
     console.log("Parsing files...")
     metadata = arg
+    try {
+        metadata.fxv = metadata.fxv.toLowerCase()
+    } catch (err) {}
     arg.instant = arg.instant || false
     files.forEach(file => {
-        const buff = fs.readFileSync(file)
-        const content = buff.toString()
-        var type = content.match(pattern)
-        console.log(`File: ${file}`)
-        if (type != null || type != undefined) {
-            type = type.toString().replace(/ /g, '')
-        }
-        const pth = path.relative(rel, file).replace("\\", "/")
-        console.log(`Relative path: ${pth}`)
-        if (type) {
-            switch (type) {
-                case "SV":
-                    console.log("Pushing server script")
-                    server_scripts.push(`'${pth}', \n`)
-                    record.push({ name: pth, type: "server" })
-                    break
-                case "CL":
-                    console.log("Pushing client script")
-                    client_scripts.push(`'${pth}', \n`)
-                    record.push({ name: pth, type: "client" })
-                    break
-                case "SH":
-                    console.log("Pushing shared script")
-                    shared_scripts.push(`'${pth}', \n`)
-                    record.push({ name: pth, type: "shared" })
-                    break
-                case "UIP":
-                    console.log("Pushing ui page")
-                    ui_page = `'${pth}' \n`
-                    record.push({ name: pth, type: "ui" })
-                    break
-                case "FILE":
-                    console.log("Pushing file")
-                    _files.push(`'${pth}', \n`)
-                    record.push({ name: pth, type: "file" })
-                    break
+        if (!file.includes(".git")) {
+            const buff = fs.readFileSync(file)
+            const content = buff.toString()
+            var type = content.match(pattern)
+            console.log(`File: ${file}`)
+            if (type != null || type != undefined) {
+                type = type.toString().replace(/ /g, '')
             }
-        } else {
-            if (getSetting("buildData", "readFromName") && metadata.filenames || metadata.filenames) {
-                console.log("Checking filenames (the setting is on)")
-                var m = pth.match(`.*(?=\/)`) //check if the path contains / symbols (so not in the root folder)
-                if (m) {
-                    //if the file is in a subfolder then get only the filename to avoid folder name issues
-                    m = m.toString()
-                    m = pth.replace(m, "").replace(`/`, "")
-                } else {
-                    m = pth
-                }
-                if (m == "index.html") {
-                    console.log("Found index.html, pusing it as UI page")
-                    ui_page = `'${pth}' \n`
-                    record.push({ name: pth, type: "ui" })
-                }
-                m = m.match(/^.*?(?=\.)/).toString() //we get everything before the first . symbol
-                    //switch statements didnt work here (because we dont check the string literally)
-                if (m.includes("server") || m.includes("SV")) {
-                    console.log("Pushing server script")
-                    server_scripts.push(`'${pth}', \n`)
-                    record.push({ name: pth, type: "server" })
-
-                } else if (m.includes("client") || m.includes("CL")) {
-                    console.log("Pushing client script")
-                    client_scripts.push(`'${pth}', \n`)
-                    record.push({ name: pth, type: "client" })
-
-                } else if (m.includes("shared") || m.includes("SH")) {
-                    console.log("Pushing shared script")
-                    shared_scripts.push(`'${pth}', \n`)
-                    record.push({ name: pth, type: "shared" })
-                } else {
-                    if (!pth.includes("index.html")) {
-                        console.log("Ignoring file: " + pth)
-                    }
+            const pth = path.relative(rel, file).replace("\\", "/")
+            console.log(`Relative path: ${pth}`)
+            if (type) {
+                switch (type) {
+                    case "SV":
+                        console.log("Pushing server script")
+                        server_scripts.push(`'${pth}', \n`)
+                        record.push({ name: pth, type: "server" })
+                        break
+                    case "CL":
+                        console.log("Pushing client script")
+                        client_scripts.push(`'${pth}', \n`)
+                        record.push({ name: pth, type: "client" })
+                        break
+                    case "SH":
+                        console.log("Pushing shared script")
+                        shared_scripts.push(`'${pth}', \n`)
+                        record.push({ name: pth, type: "shared" })
+                        break
+                    case "UIP":
+                        console.log("Pushing ui page")
+                        ui_page = `'${pth}' \n`
+                        record.push({ name: pth, type: "ui" })
+                        break
+                    case "FILE":
+                        console.log("Pushing file")
+                        _files.push(`'${pth}', \n`)
+                        record.push({ name: pth, type: "file" })
+                        break
                 }
             } else {
-                console.log("File name reading is off, ignoring file: " + pth)
-            }
+                if (getSetting("buildData", "readFromName") && metadata.filenames || metadata.filenames) {
+                    console.log("Checking filenames (the setting is on)")
+                    var m = pth.match(`.*(?=\/)`) //check if the path contains / symbols (so not in the root folder)
+                    if (m) {
+                        //if the file is in a subfolder then get only the filename to avoid folder name issues
+                        m = m.toString()
+                        m = pth.replace(m, "").replace(`/`, "")
+                    } else {
+                        m = pth
+                    }
+                    if (m == "index.html") {
+                        console.log("Found index.html, pusing it as UI page")
+                        ui_page = `'${pth}' \n`
+                        record.push({ name: pth, type: "ui" })
+                    }
+                    m = m.match(/^.*?(?=\.)/).toString() //we get everything before the first . symbol
+                        //switch statements didnt work here (because we dont check the string literally)
+                    if (m.includes("server") || m.includes("SV")) {
+                        console.log("Pushing server script")
+                        server_scripts.push(`'${pth}', \n`)
+                        record.push({ name: pth, type: "server" })
 
+                    } else if (m.includes("client") || m.includes("CL")) {
+                        console.log("Pushing client script")
+                        client_scripts.push(`'${pth}', \n`)
+                        record.push({ name: pth, type: "client" })
+
+                    } else if (m.includes("shared") || m.includes("SH")) {
+                        console.log("Pushing shared script")
+                        shared_scripts.push(`'${pth}', \n`)
+                        record.push({ name: pth, type: "shared" })
+                    } else {
+                        if (!pth.includes("index.html")) {
+                            console.log("Ignoring file: " + pth)
+                        }
+                    }
+                } else {
+                    console.log("File name reading is off, ignoring file: " + pth)
+                }
+            }
         }
     })
     try {
@@ -138,8 +142,8 @@ const writeManif = function(ev, dat) {
     dat = dat || {}
         //formatting the file
     var final = `--Made with: fxmanifest-maker (https://github.com/LedAndris/FXmanifest-maker)
-fx_version "${metadata.fxv.toLowerCase()}" --just in case .toLowerCase()
-games {${metadata.game.toLowerCase()}}
+fx_version "${metadata.fxv}" --just in case .toLowerCase()
+games {${metadata.game}}
 author "${metadata.auth}" 
 description "${metadata.descr}"
 ${ui_page}files ${format(_files).join("")}client_scripts ${format(client_scripts).join("")}server_scripts ${format(server_scripts).join("")}shared_scripts ${format(shared_scripts).join("")}`

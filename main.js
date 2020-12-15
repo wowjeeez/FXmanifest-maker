@@ -95,6 +95,7 @@ const handler = function(event, arg) {
                     }
                     if (m.includes(".ttf")) {
                         _files.push(`'${pth}', \n`)
+                        record.push({ name: pth, type: "file" })
                     }
                     m = m.match(/^.*?(?=\.)/).toString() //we get everything before the first . symbol
                         //switch statements didnt work here (because we dont check the string literally)

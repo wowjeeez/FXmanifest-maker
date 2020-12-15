@@ -5,7 +5,7 @@ const path = require('path')
 const buffer = require('buffer')
 const renderer = ("./renderer")
 var win
-const { readFilesSync } = require('./src/functions')
+const { readFilesSync, replaceLast } = require('./src/functions')
 const pattern = `(?<=MANIF:).*`
 const userdir = app.getPath("appData")
 const { execAddon } = require("./src/workerthrd")
@@ -43,7 +43,7 @@ const handler = function(event, arg) {
             if (type != null || type != undefined) {
                 type = type.toString().replace(/ /g, '')
             }
-            const pth = path.relative(rel, file).replace("\\", "/")
+            const pth = path.relative(rel, file).split("\\").join("/")
             console.log(`Relative path: ${pth}`)
             if (type) {
                 switch (type) {
@@ -66,6 +66,8 @@ const handler = function(event, arg) {
                         console.log("Pushing ui page")
                         ui_page = `'${pth}' \n`
                         record.push({ name: pth, type: "ui" })
+                        _files.push(`'${pth}', \n`) //have to add ui page as a file too
+                        record.push({ name: pth, type: "file" })
                         break
                     case "FILE":
                         console.log("Pushing file")
@@ -88,6 +90,11 @@ const handler = function(event, arg) {
                         console.log("Found index.html, pusing it as UI page")
                         ui_page = `'${pth}' \n`
                         record.push({ name: pth, type: "ui" })
+                        _files.push(`'${pth}', \n`)
+                        record.push({ name: pth, type: "file" })
+                    }
+                    if (m.includes(".ttf")) {
+                        _files.push(`'${pth}', \n`)
                     }
                     m = m.match(/^.*?(?=\.)/).toString() //we get everything before the first . symbol
                         //switch statements didnt work here (because we dont check the string literally)
@@ -106,7 +113,7 @@ const handler = function(event, arg) {
                         shared_scripts.push(`'${pth}', \n`)
                         record.push({ name: pth, type: "shared" })
                     } else {
-                        if (!pth.includes("index.html")) {
+                        if (!pth.includes("index.html") && !m.includes(".ttf")) {
                             console.log("Ignoring file: " + pth)
                         }
                     }
@@ -116,6 +123,8 @@ const handler = function(event, arg) {
             }
         }
     })
+
+
     try {
         if (!arg.instant) {
             event.reply("parsedFiles", record)
@@ -135,17 +144,17 @@ const writeManif = function(ev, dat) {
         //prevent undefined entries
     if (ui_page) {
         console.log("Parsing ui page")
-        ui_page = "ui_page " + ui_page
+        ui_page = "ui_page " + replaceLast(ui_page, " ", "")
     } else {
         ui_page = ""
     }
     dat = dat || {}
         //formatting the file
     var final = `--Made with: fxmanifest-maker (https://github.com/LedAndris/FXmanifest-maker)
-fx_version "${metadata.fxv}" --just in case .toLowerCase()
-games {${metadata.game}}
-author "${metadata.auth}" 
-description "${metadata.descr}"
+fx_version "${replaceLast(metadata.fxv, " ", "")}"
+games {${replaceLast(metadata.game, " ", "")}}
+author "${replaceLast(metadata.auth, " ", "")}" 
+description "${replaceLast(metadata.descr, " ", "")}"
 ${ui_page}files ${format(_files).join("")}client_scripts ${format(client_scripts).join("")}server_scripts ${format(server_scripts).join("")}shared_scripts ${format(shared_scripts).join("")}`
     fs.writeFileSync(rel + "/fxmanifest.lua", final)
     try {
@@ -169,6 +178,7 @@ module.exports = { userdir, handler, prebuild, writeManif }
 
 const { Accessor, Table, Inserter, Query } = require("./onboard/main") //reading the whole settings object caused issues, so I had to make it to read manually
 const { format } = require("./src/formatter")
+const { fx } = require('jquery')
 
 try {
     function createWindow() {
@@ -226,6 +236,22 @@ try {
                 console.log("Path: " + rel)
                 files = readFilesSync(rel)
                 const settings = getSetting("buildData")
+                if (fs.existsSync(`${rel}/fxmanifest.lua`)) {
+                    console.log("Found existing fxmanifest, reading value from it")
+                    try {
+                        const rawmanifest = fs.readFileSync(`${rel}/fxmanifest.lua`).toString()
+                        const vers = rawmanifest.match(/(?<=fx_version ).*/).toString().replace(`"`, "").replace(`"`, "").replace("'", "").replace("'", "") //holy shit how ugly
+                        const auth = rawmanifest.match(/(?<=author ).*/).toString().replace(`"`, "").replace(`"`, "").replace("'", "").replace("'", "")
+                        const descr = rawmanifest.match(/(?<=description ).*/).toString().replace(`"`, "").replace(`"`, "").replace("'", "").replace("'", "")
+                        console.log(vers, auth, descr)
+                        settings.version = vers
+                        settings.author = auth
+                        settings.description = descr
+                    } catch (err) {
+                        console.log("Fxmanifest is probably empty")
+                    }
+
+                }
                 if (!getSetting("buildData", "autoBuild")) {
                     event.reply("openForm", {
                         version: settings.version,

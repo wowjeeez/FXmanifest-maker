@@ -189,12 +189,13 @@ ipcRenderer.on("openForm", (event, data) => {
         }
         //TODO! load settings properly when prompted the def manifest input
         $(".meta").fadeIn(500)
+        console.log(data)
         $(".meta #fxv").val(data.version.charAt(0).toUpperCase() + data.version.slice(1) || "Cerulean").change()
         $(".meta #game").val(game).change()
-        $("#quickmode").prop("checked", data.autoBuild || false)
-        $("#filename").prop("checked", data.readFromName || true)
-        $(".meta #author").val(data.author)
-        $(".meta #descr").val(data.description)
+        $("#quickmode").prop("checked", data.instant || false)
+        $("#filename").prop("checked", data.filenames || true)
+        $(".meta #author").val(data.auth)
+        $(".meta #descr").val(data.descr)
 
     })
 })

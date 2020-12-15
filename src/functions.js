@@ -12,4 +12,20 @@ const readFilesSync = (dir, filelist = []) => {
     });
     return filelist;
 }
-module.exports = { readFilesSync }
+
+function replaceLast(str, search, repl) {
+    var a = str.split("");
+    var length = search.length;
+    if (str.lastIndexOf(search) != -1) {
+        for (var i = str.lastIndexOf(search); i < str.lastIndexOf(search) + length; i++) {
+            if (i == str.lastIndexOf(search)) {
+                a[i] = repl;
+            } else {
+                delete a[i];
+            }
+        }
+    }
+
+    return a.join("");
+}
+module.exports = { readFilesSync, replaceLast }

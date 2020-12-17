@@ -28,4 +28,22 @@ function replaceLast(str, search, repl) {
 
     return a.join("");
 }
-module.exports = { readFilesSync, replaceLast }
+
+function getExternals(str) {
+    let entries = str.split(",")
+    let n_entries = []
+    entries.forEach(entry => {
+        entry = entry.replace(`"`, "").replace(`"`, "").replace(`'`, "").replace(`'`, "")
+        if (entry.includes("@")) {
+            entry = `'@${entry.match(/(?<=@).*/).toString()}'` //recreate new entry
+            console.log(`Entry: ${entry}`)
+            n_entries.push(entry)
+        }
+    })
+    return n_entries
+}
+
+
+let clearArr = (arr) => arr.filter((v, i) => arr.indexOf(v) === i)
+
+module.exports = { readFilesSync, replaceLast, getExternals, clearArr }

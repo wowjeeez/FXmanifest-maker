@@ -69,7 +69,8 @@ $(() => {
             game: game,
             auth: $("#author").val() || "no one",
             descr: $("#descr").val() || "nothing",
-            filenames: $("#filename").is(':checked')
+            filenames: $("#filename").is(':checked'),
+            keepExt: $("#keepexts").is(':checked'),
         }
         ipcRenderer.send("metadata", meta)
         $(".meta").fadeOut(100, () => {
@@ -106,8 +107,8 @@ $(() => {
             cache = {
                 fxv: $("#fxv").val(),
                 game: game,
-                auth: $("#author").val() || "no one",
-                descr: $("#descr").val() || "nothing",
+                auth: $("#author").val() || "",
+                descr: $("#descr").val() || "",
                 filenames: $("#filename").is(':checked')
             }
         }
@@ -186,6 +187,12 @@ ipcRenderer.on("openForm", (event, data) => {
         }
         if (game == "'common'") {
             game = "common"
+        }
+        if (data.keepExt) {
+            $(".exts").show()
+            $("#keepexts").prop("checked", true) //active be default
+        } else {
+            $(".exts").hide()
         }
         //TODO! load settings properly when prompted the def manifest input
         $(".meta").fadeIn(500)

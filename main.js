@@ -5,7 +5,7 @@ const path = require('path')
 const buffer = require('buffer')
 const renderer = ("./renderer")
 var win
-const { readFilesSync, replaceLast } = require('./src/functions')
+const { readFilesSync, replaceLast, getExternals, clearArr } = require('./src/functions')
 const pattern = `(?<=MANIF:).*`
 const userdir = app.getPath("appData")
 const { execAddon } = require("./src/workerthrd")
@@ -13,8 +13,10 @@ const v = app.getVersion()
 var server_scripts = []
 var shared_scripts = []
 var client_scripts = []
+var deps = []
 var _files = []
 var ui_page
+var externals = null
 var record = []
 var metadata = {}
 var files //centralized so all "global" variables are declared here
@@ -30,6 +32,34 @@ const handler = function(event, arg) {
     //handles the file parsing
     console.log("Parsing files...")
     metadata = arg
+        /* //TODO! properly split up the strings
+    if (metadata.keepExt) {
+        console.log(externals)
+        if (externals.server) {
+            server_scripts = externals.server
+            server_scripts.forEach(el => {
+                record.push({ name: el, type: "server" })
+            })
+        }
+        if (externals.client) {
+            client_scripts = externals.client
+            client_scripts.forEach(el => {
+                record.push({ name: el, type: "client" })
+            })
+        }
+        if (externals.shared) {
+            shared_scripts = externals.shared
+            shared_scripts.forEach(el => {
+                record.push({ name: el, type: "shared" })
+            })
+        }
+        if (externals.dep) {
+            deps = externals.dep
+            deps.forEach(el => {
+                record.push({ name: el, type: "dependency" })
+            })
+        }
+    } */
     try {
         metadata.fxv = metadata.fxv.toLowerCase()
     } catch (err) {}
@@ -240,16 +270,129 @@ try {
                 if (fs.existsSync(`${rel}/fxmanifest.lua`)) {
                     console.log("Found existing fxmanifest, reading value from it")
                     try {
-                        const rawmanifest = fs.readFileSync(`${rel}/fxmanifest.lua`).toString()
-                        const vers = rawmanifest.match(/(?<=fx_version ).*/).toString().replace(`"`, "").replace(`"`, "").replace("'", "").replace("'", "") //holy shit how ugly
-                        const auth = rawmanifest.match(/(?<=author ).*/).toString().replace(`"`, "").replace(`"`, "").replace("'", "").replace("'", "")
-                        const descr = rawmanifest.match(/(?<=description ).*/).toString().replace(`"`, "").replace(`"`, "").replace("'", "").replace("'", "")
-                        console.log(vers, auth, descr)
+                        let rawmanifest = fs.readFileSync(`${rel}/fxmanifest.lua`).toString()
+                        var vers = rawmanifest.match(/(?<=fx_version ).*/) //holy shit how ugly
+                        var auth = rawmanifest.match(/(?<=author ).*/)
+                        var descr = rawmanifest.match(/(?<=description ).*/)
+                            //prevent null errors:
+                        if (vers) {
+                            vers = vers.toString().replace(`"`, "").replace(`"`, "").replace("'", "").replace("'", "")
+                        }
+                        if (auth) {
+                            auth = auth.toString().replace(`"`, "").replace(`"`, "").replace("'", "").replace("'", "")
+                        }
+                        if (descr) {
+                            descr = descr.toString().replace(`"`, "").replace(`"`, "").replace("'", "").replace("'", "")
+                        }
                         settings.version = vers
                         settings.author = auth
                         settings.description = descr
+                        rawmanifest = rawmanifest.replace(/\r?\n?/g, '').toString()
+                            //TODO! Read external files, deps
+                            //get all files that are already in the manifest
+                            //object like entry:
+                        var pref_clients = rawmanifest.match(/(?<=client_scripts {)(.*)(?=})/) //TODO! fix regex too
+                        var pref_servers = rawmanifest.match(/(?<=server_scripts {)(.*)(?=})/)
+                        var pref_shareds = rawmanifest.match(/(?<=shared_scripts {)(.*)(?=})/)
+                        var pref_deps = rawmanifest.match(/(?<=dependencies {)(.*)(?=})/)
+                            //string like entry:
+                        var pref_client = rawmanifest.match(/(?<=client_script ).*/) //examples to bad naming can be seen here
+                        var pref_server = rawmanifest.match(/(?<=server_script ).*/)
+                        var pref_shared = rawmanifest.match(/(?<=shared_script ).*/)
+                        var pref_dep = rawmanifest.match(/(?<=dependency ).*/)
+                        externals = {}
+                            //I should make functions for this, because this is fucking unnaccaptable
+                        if (pref_clients) {
+                            pref_clients = pref_clients.toString()
+                        } else {
+                            pref_clients = ""
+                        }
+                        if (pref_servers) {
+                            pref_servers = pref_servers.toString() //now im halfway done and ive just found out an easier solution but nah fuck it its 0:31 am
+                        } else {
+                            pref_servers = ""
+                        }
+                        if (pref_shareds) {
+                            pref_shareds = pref_shareds.toString()
+                        } else {
+                            pref_shareds = ""
+                        }
+                        if (pref_deps) {
+                            pref_deps = pref_deps.toString()
+                        } else {
+                            pref_deps = ""
+                        }
+                        if (pref_client) {
+                            pref_client = pref_client.toString()
+                        } else {
+                            pref_client = ""
+                        }
+                        if (pref_server) {
+                            pref_server = pref_server.toString()
+                        } else {
+                            pref_server = ""
+                        }
+                        if (pref_shared) {
+                            pref_shared = pref_shared.toString()
+                        } else {
+                            pref_shared = ""
+                        }
+                        if (pref_dep) {
+                            pref_dep = pref_dep.toString()
+                        } else {
+                            pref_dep = ""
+                        }
+
+                        //end of checking bs
+                        if (pref_clients.includes("@")) {
+                            externals.client = getExternals(pref_clients)
+                        }
+                        if (pref_servers.includes("@")) {
+                            externals.server = getExternals(pref_servers)
+                        }
+                        if (pref_shareds.includes("@")) {
+                            externals.shared = getExternals(pref_shareds)
+                        }
+                        if (pref_deps.length >= 1) {
+                            let m = pref_deps.split("}")
+                            let s
+                            m.forEach(entry => {
+                                if (!entry.includes(`\.`) && !entry.includes(`@`)) {
+                                    s = entry
+                                }
+                            })
+                            console.log(`S: ${s}`)
+                        }
+
+                        if (pref_client.includes("@")) {
+                            let m = pref_client.match(/(?<=@).*/)
+                            m = m.toString().replace(`"`, "").replace(`"`, "").replace(`'`, "").replace(`'`, "") //removing all quotes just in case, may remove later
+                            m = `'@${m}'`
+                            externals.client.push(m) //recreate new entry
+                        }
+                        if (pref_server.includes("@")) {
+                            let m = pref_server.match(/(?<=@).*/)
+                            m = m.toString().replace(`"`, "").replace(`"`, "").replace(`'`, "").replace(`'`, "")
+                            m = `'@${m}'`
+                            externals.server.push(m) //recreate new entry
+                        }
+                        if (pref_shared.includes("@")) {
+                            let m = pref_shared.match(/(?<=@).*/)
+                            m = m.toString().replace(`"`, "").replace(`"`, "").replace(`'`, "").replace(`'`, "")
+                            m = `'@${m}'`
+                            externals.shared.push(m) //recreate new entry
+                        }
+                        if (pref_dep) {
+                            //TODO! fix deps
+                            externals.dep.push(pref_dep)
+                        }
+                        for (let [k, v] of Object.entries(externals)) {
+                            externals[k] = clearArr(v)
+                        }
                     } catch (err) {
                         console.log("Fxmanifest is probably empty")
+                        console.log(`Err: ${err}`)
+                        externals = null //there will be a check later whether to show the front-end switch for deps and imported files or not
                     }
 
                 }
@@ -261,6 +404,7 @@ try {
                         descr: settings.description,
                         filenames: settings.readFromName,
                         instant: true,
+                        keepExt: externals ? true : false, //super cool check to show front-end switch
                     })
                 } else {
                     console.log("Autobuilding manifest")
@@ -272,7 +416,8 @@ try {
                             descr: settings.description,
                             filenames: settings.readFromName,
                             instant: true,
-                        }) //cant send events from here so redirect back to the renderer
+                            keepExt: externals ? true : false,
+                        }) //cant send events from here, so redirect back to the renderer so the "metadata" event will run immediately (currently LN#398)
 
                 }
             }

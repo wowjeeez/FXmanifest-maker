@@ -276,17 +276,19 @@ try {
                         var descr = rawmanifest.match(/(?<=description ).*/)
                             //prevent null errors:
                         if (vers) {
-                            vers = vers.toString().replace(`"`, "").replace(`"`, "").replace("'", "").replace("'", "")
+                            vers = vers.toString().replace(/"/g, "").replace(/'/g, "")
                         }
                         if (auth) {
-                            auth = auth.toString().replace(`"`, "").replace(`"`, "").replace("'", "").replace("'", "")
+                            auth = auth.toString().replace(/"/g, "").replace(/'/g, "")
                         }
                         if (descr) {
-                            descr = descr.toString().replace(`"`, "").replace(`"`, "").replace("'", "").replace("'", "")
+                            descr = descr.toString().replace(/"/g, "").replace(/'/g, "")
                         }
                         settings.version = vers
                         settings.author = auth
                         settings.description = descr
+                        rawmanifest = rawmanifest.replace(/\(/g, " ") //sanitize
+                        rawmanifest = rawmanifest.replace(/\)/g, " ")
                         rawmanifest = rawmanifest.replace(/\r?\n?/g, '').toString()
                             //TODO! Read external files, deps
                             //get all files that are already in the manifest

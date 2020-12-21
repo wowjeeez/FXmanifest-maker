@@ -5,7 +5,7 @@ const path = require('path')
 const buffer = require('buffer')
 const renderer = ("./renderer")
 var win
-const { readFilesSync, replaceLast, getExternals, clearArr } = require('./src/functions')
+const { readFilesSync, replaceLast, getExternals } = require('./src/functions')
 const pattern = `(?<=MANIF:).*`
 const userdir = app.getPath("appData")
 const { execAddon } = require("./src/workerthrd")
@@ -27,7 +27,21 @@ function read(dir) {
     console.log("Path: " + rel)
     files = readFilesSync(rel)
 }
-
+//smort func
+Array.prototype.uniformize = function() {
+    let arr = this //allow us to do all operations, and prevent the "invalid left hand side..." err
+    let alr = {}
+    arr.forEach(en => {
+        if (alr[en]) {
+            console.log(alr)
+            console.log(`Found dupl element: ${en}`)
+            arr = arr.splice(arr.indexOf(en), 1)
+        } else {
+            alr[en] = true
+        }
+    })
+    return a
+}
 const handler = function(event, arg) {
     //handles the file parsing
     console.log("Parsing files...")
@@ -289,19 +303,39 @@ try {
                         settings.description = descr
                         rawmanifest = rawmanifest.replace(/\(/g, " ") //sanitize
                         rawmanifest = rawmanifest.replace(/\)/g, " ")
-                        rawmanifest = rawmanifest.replace(/\r?\n?/g, '').toString()
+                        rawmanifest = rawmanifest.replace(/\r?\n?/g, '').replace(/\s\s+/g, ' ').replace(/\}/g, "}\n") //if there are more spaces, only use one
                             //TODO! Read external files, deps
                             //get all files that are already in the manifest
                             //object like entry:
-                        var pref_clients = rawmanifest.match(/(?<=client_scripts {)(.*)(?=})/) //TODO! fix regex too
-                        var pref_servers = rawmanifest.match(/(?<=server_scripts {)(.*)(?=})/)
-                        var pref_shareds = rawmanifest.match(/(?<=shared_scripts {)(.*)(?=})/)
-                        var pref_deps = rawmanifest.match(/(?<=dependencies {)(.*)(?=})/)
-                            //string like entry:
-                        var pref_client = rawmanifest.match(/(?<=client_script ).*/) //examples to bad naming can be seen here
-                        var pref_server = rawmanifest.match(/(?<=server_script ).*/)
-                        var pref_shared = rawmanifest.match(/(?<=shared_script ).*/)
-                        var pref_dep = rawmanifest.match(/(?<=dependency ).*/)
+                        var pref = {}
+                        pref.clients = rawmanifest.match(/(?<=client_scripts {)(.*)(?=})/) //TODO! fix regex too
+                        pref.servers = rawmanifest.match(/(?<=server_scripts {)(.*)(?=})/)
+                        pref.shareds = rawmanifest.match(/(?<=shared_scripts {)(.*)(?=})/)
+                        pref.deps = rawmanifest.match(/(?<=dependencies {)(.*)(?=})/)
+                            //string like entries:
+                        pref.client = rawmanifest.match(/(?<=client_script ).*/) //examples to bad naming can be seen here
+                        pref.server = rawmanifest.match(/(?<=server_script ).*/)
+                        pref.shared = rawmanifest.match(/(?<=shared_script ).*/)
+                        pref.dep = rawmanifest.match(/(?<=dependency ).*/)
+                        for (const [k, v] of Object.entries(pref)) {
+                            if (pref[k]) {
+                                pref[k] = pref[k].toString().split(",") //mmm strange
+                                console.log("pref k", pref[k].length)
+                                pref[k] = pref[k].uniformize() //for some reason every entry is doubled so we use this fn to get rid of the dupes
+                                console.log("pref k", pref[k]) //even more strange
+                            }
+                        }
+                        //another loop just to be clear
+                        console.log(pref)
+                        for (const [k, v] of Object.entries(pref)) {
+                            if (typeof v == "object") {
+                                v.forEach(entr => {
+                                    if (entr.includes("@")) {
+                                        console.log(`External found: ${entr}`)
+                                    }
+                                })
+                            }
+                        }
                     } catch (err) {
                         console.log("Fxmanifest is probably empty")
                         console.log(`Err: ${err}`)

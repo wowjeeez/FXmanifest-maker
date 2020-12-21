@@ -8,7 +8,6 @@ var win
 const { readFilesSync, replaceLast, getExternals } = require('./src/functions')
 const pattern = `(?<=MANIF:).*`
 const userdir = app.getPath("appData")
-const { execAddon } = require("./src/workerthrd")
 const v = app.getVersion()
 var server_scripts = []
 var shared_scripts = []
@@ -26,21 +25,6 @@ function read(dir) {
     rel = dir
     console.log("Path: " + rel)
     files = readFilesSync(rel)
-}
-//smort func
-Array.prototype.uniformize = function() {
-    let arr = this //allow us to do all operations, and prevent the "invalid left hand side..." err
-    let alr = {}
-    arr.forEach(en => {
-        if (alr[en]) {
-            console.log(alr)
-            console.log(`Found dupl element: ${en}`)
-            arr = arr.splice(arr.indexOf(en), 1)
-        } else {
-            alr[en] = true
-        }
-    })
-    return a
 }
 const handler = function(event, arg) {
     //handles the file parsing
@@ -249,8 +233,6 @@ try {
         win.setMenuBarVisibility(false)
         win.loadFile('index.html')
         buildSettings(userdir) //exports werent working as imagined
-        console.log("Executing C++") //does nothing at the moment
-        execAddon("hello") //does nothing at the moment
     }
 
     app.whenReady().then(createWindow)
@@ -303,11 +285,12 @@ try {
                         settings.description = descr
                         rawmanifest = rawmanifest.replace(/\(/g, " ") //sanitize
                         rawmanifest = rawmanifest.replace(/\)/g, " ")
-                        rawmanifest = rawmanifest.replace(/\r?\n?/g, '').replace(/\s\s+/g, ' ').replace(/\}/g, "}\n") //if there are more spaces, only use one
+                        rawmanifest = rawmanifest.replace(/'/g, `"`) // will be much easier to work with
+                        rawmanifest = rawmanifest.replace(/\r?\n?/g, '').replace(/\s\s+/g, ' ').replace(/\}/g, "}\n")
                             //TODO! Read external files, deps
                             //get all files that are already in the manifest
-                            //object like entry:
                         var pref = {}
+                            //object like entries:
                         pref.clients = rawmanifest.match(/(?<=client_scripts {)(.*)(?=})/) //TODO! fix regex too
                         pref.servers = rawmanifest.match(/(?<=server_scripts {)(.*)(?=})/)
                         pref.shareds = rawmanifest.match(/(?<=shared_scripts {)(.*)(?=})/)
@@ -319,19 +302,28 @@ try {
                         pref.dep = rawmanifest.match(/(?<=dependency ).*/)
                         for (const [k, v] of Object.entries(pref)) {
                             if (pref[k]) {
-                                pref[k] = pref[k].toString().split(",") //mmm strange
-                                console.log("pref k", pref[k].length)
-                                pref[k] = pref[k].uniformize() //for some reason every entry is doubled so we use this fn to get rid of the dupes
-                                console.log("pref k", pref[k]) //even more strange
+                                if (k.endsWith("s")) { //maybe the naming was smart?
+                                    pref[k] = pref[k].toString().split(",")
+                                    pref[k] = pref[k].filter(function(item, index) {
+                                            if (pref[k].indexOf(item) == index)
+                                                return item;
+                                        })
+                                        //for some reason every entry is doubled so we use this logic to get rid of the dupes
+                                } else {
+                                    //single entries:
+                                    pref[k] = pref[k].toString().replace(/\s\s+/g, '')
+                                    pref[k] = pref[k].substring(0, pref[k].lastIndexOf(`"`)) + `"`
+                                    console.log(`Single entr: ${pref[k]}`)
+                                }
                             }
                         }
                         //another loop just to be clear
                         console.log(pref)
                         for (const [k, v] of Object.entries(pref)) {
-                            if (typeof v == "object") {
+                            if (typeof v == "object" && v) {
                                 v.forEach(entr => {
                                     if (entr.includes("@")) {
-                                        console.log(`External found: ${entr}`)
+                                        console.log(`External found: ${entr} in entry: ${k}`)
                                     }
                                 })
                             }

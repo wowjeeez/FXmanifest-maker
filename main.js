@@ -287,19 +287,21 @@ try {
                         rawmanifest = rawmanifest.replace(/\)/g, " ")
                         rawmanifest = rawmanifest.replace(/'/g, `"`) // will be much easier to work with
                         rawmanifest = rawmanifest.replace(/\r?\n?/g, '').replace(/\s\s+/g, ' ').replace(/\}/g, "}\n")
-                            //TODO! Read external files, deps
                             //get all files that are already in the manifest
                         var pref = {}
+                        var dependencies = {}
                             //object like entries:
-                        pref.clients = rawmanifest.match(/(?<=client_scripts {)(.*)(?=})/) //TODO! fix regex too
+                        pref.clients = rawmanifest.match(/(?<=client_scripts {)(.*)(?=})/)
                         pref.servers = rawmanifest.match(/(?<=server_scripts {)(.*)(?=})/)
                         pref.shareds = rawmanifest.match(/(?<=shared_scripts {)(.*)(?=})/)
-                        pref.deps = rawmanifest.match(/(?<=dependencies {)(.*)(?=})/)
+                        pref.files = rawmanifest.match(/(?<=files {)(.*)(?=})/)
+                        dependencies.o = rawmanifest.match(/(?<=dependencies {)(.*)(?=})/) || []
                             //string like entries:
                         pref.client = rawmanifest.match(/(?<=client_script ).*/) //examples to bad naming can be seen here
                         pref.server = rawmanifest.match(/(?<=server_script ).*/)
                         pref.shared = rawmanifest.match(/(?<=shared_script ).*/)
-                        pref.dep = rawmanifest.match(/(?<=dependency ).*/)
+                        pref.file = rawmanifest.match(/(?<=file ).*/)
+                        dependencies.s = rawmanifest.match(/(?<=dependency ).*/) || [] //deps will be handled later on
                         for (const [k, v] of Object.entries(pref)) {
                             if (pref[k]) {
                                 if (k.endsWith("s")) { //maybe the naming was smart?
@@ -313,23 +315,42 @@ try {
                                     //single entries:
                                     pref[k] = pref[k].toString().replace(/\s\s+/g, '')
                                     pref[k] = pref[k].substring(0, pref[k].lastIndexOf(`"`)) + `"`
-                                    console.log(`Single entr: ${pref[k]}`)
+                                    pref[k + "s"] = pref[k + "s"] || [] //super smart naming
+                                    pref[k + "s"].push(pref[k]) //merge single entries with the multiple ones so it will be easier to work with
                                 }
                             }
                         }
                         //another loop just to be clear
-                        console.log(pref)
-                        for (const [k, v] of Object.entries(pref)) {
+                        for (let [k, v] of Object.entries(dependencies)) {
+                            if (v[0]) {
+                                dependencies[k] = v.toString()
+                            }
+                            if (!k.endsWith("s") && v[0]) {
+                                dependencies[k] = v.split(",")
+                            } else if (v[0]) {
+                                dependencies[k] = dependencies[k].replace(/\s\s+/g, '')
+                                dependencies[k] = dependencies[k].substring(0, dependencies[k].lastIndexOf(`"`)) + `"`
+                                dependencies["o"].push(dependencies[k])
+                            }
+                        }
+                        console.log(dependencies)
+                        var externals = {}
+                        for (let [k, v] of Object.entries(pref)) {
                             if (typeof v == "object" && v) {
                                 v.forEach(entr => {
                                     if (entr.includes("@")) {
                                         console.log(`External found: ${entr} in entry: ${k}`)
+                                        k = k.substring(0, k.length - 1) //remove s
+                                        externals[k] = externals[k] || []
+                                        externals[k].push(entr)
                                     }
                                 })
                             }
                         }
+                        pref = null //this could be a large object, so manual gc
+                        console.log(externals)
                     } catch (err) {
-                        console.log("Fxmanifest is probably empty")
+                        console.log("Fxmanifest is probably empty or an error occured")
                         console.log(`Err: ${err}`)
                         externals = null //there will be a check later whether to show the front-end switch for deps and imported files or not
                     }

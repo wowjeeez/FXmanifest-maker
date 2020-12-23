@@ -76,7 +76,7 @@ handler(null, options, record => {
         console.log(chalk.red(" \n \n        File entries: \n \n \n"))
         console.log(table(tbl))
         rl.question("Proceed with building the manifest? (y/n)", ans => {
-            if (ans == "y") {
+            if (ans.toLowerCase() == "y") {
                 var spinner = ora({
                     text: "Writing manifest... \n"
                 }).start();

@@ -207,8 +207,8 @@ ${ui_page}files ${format(_files).join("")}client_scripts ${format(client_scripts
             ev.reply("parse")
         }
         if (dat.cli) {
-            cb()
             console.log = oc
+            cb(console)
         }
         return true
     } catch (err) {}

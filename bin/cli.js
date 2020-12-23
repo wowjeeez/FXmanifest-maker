@@ -1,5 +1,5 @@
 #!/usr/bin/env node
- //Currently, we wont even interact with the main proc, we will just steal their functions
+ //Currently, we wont even interact with the main proc, we will just steal their functions and use the .cli property to control their behaviors, I'm kind of proud to this because it didnt require too much tweaking
 const readline = require("readline")
 const chalk = require('chalk')
 const ora = require('ora');
@@ -76,11 +76,11 @@ handler(null, options, record => {
         console.log(chalk.red(" \n \n        File entries: \n \n \n"))
         console.log(table(tbl))
         rl.question("Proceed with building the manifest? (y/n)", ans => {
-            if (ans.includes("y")) {
+            if (ans == "y") {
                 var spinner = ora({
                     text: "Writing manifest... \n"
                 }).start();
-                writeManif(null, { cli: true }, () => {
+                writeManif(null, { cli: true }, console => { //send back the whole console obj
                     spinner.succeed("Manifest built")
                     console.log(chalk.green("Manifest successfully built!. \nThank your for using my tool!"))
                     process.exit()

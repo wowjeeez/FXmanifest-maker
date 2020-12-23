@@ -178,6 +178,7 @@ try {
 const writeManif = function(ev, dat, cb = function() {}) {
     //creates the manifest file itself, with the data read by the "handler" func
     let oc
+    dat = dat || {}
     if (dat.cli) {
         oc = console.log
         console.log = function() {}
@@ -191,8 +192,7 @@ const writeManif = function(ev, dat, cb = function() {}) {
     } else {
         ui_page = ""
     }
-    dat = dat || {}
-        //formatting the file
+    //formatting the file
     var final = `--Made with: fxmanifest-maker (https://github.com/LedAndris/FXmanifest-maker)
 fx_version "${replaceLast(metadata.fxv, " ", "")}"
 games {${replaceLast(metadata.game, " ", "")}}

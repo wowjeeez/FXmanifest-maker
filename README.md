@@ -20,3 +20,4 @@ If the filename includes: <br>
 If you open the `settings` (gear icon) tab you will see an option called *One click manifest creation*, if you enable that, the meta entries specified below will be used, skipping the manifest data and the finalizing page when creating a new manifest (so it will take less time to create it).
 # Incoming features
 Preserving data from existing manifests (imported files, dependencies etc) \[author, description, version, gametype is already done]
+CLI (The system is done, it's just needs to be implemented (see `bin/cli.js`)

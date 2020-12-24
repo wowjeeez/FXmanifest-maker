@@ -21,7 +21,7 @@ If you open the `settings` (gear icon) tab you will see an option called *One cl
 
 # Installation
 ### 1. UI (without CLI)
-Download the installer binaries from the Releases[https://github.com/LedAndris/FXmanifest-maker/releases] section, and install it. <br>
+Download the installer binaries from the [Releases](https://github.com/LedAndris/FXmanifest-maker/releases) section, and install it. <br>
 ### 2. CLI ("without" UI)
 You will need both npm and node installed.
 1. Clone this repo

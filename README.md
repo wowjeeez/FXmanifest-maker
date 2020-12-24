@@ -31,4 +31,3 @@ You will need both npm and node installed.
 Easiest way is to do both steps, so you don't have to build electron manually.
 # Incoming features
 #### -Preserving data from existing manifests (imported files, dependencies etc) \[author, description, version, gametype is already done] <br>
-#### -CLI (The system is done, it's just needs to be implemented (see `bin/cli.js`)

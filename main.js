@@ -19,16 +19,23 @@ try {
 } catch (err) {
     v = false
 }
-var server_scripts = []
-var shared_scripts = []
-var client_scripts = []
-var deps = []
-var _files = []
+var scripts = {}
+scripts.server = []
+scripts.client = []
+scripts.shared = []
+scripts.files = []
+    /*
+    var scripts.server = []
+    var scripts.shared = []
+    var scripts.client = []
+    */
+var dependencies = {}
+
+//var scripts.files = []
 var ui_page
-var externals = null
 var record = []
 var metadata = {}
-var files //centralized so all "global" variables are declared here
+var files //THIS IS NOT THE files {} entry!!!  centralized so all "global" variables are declared here
 var rel
     //reads all the files (not currently used)
 function read(dir) {
@@ -68,29 +75,29 @@ try {
                     switch (type) {
                         case "SV":
                             console.log("Pushing server script")
-                            server_scripts.push(`'${pth}', \n`)
+                            scripts.server.push(`'${pth}', \n`)
                             record.push({ name: pth, type: "server" })
                             break
                         case "CL":
                             console.log("Pushing client script")
-                            client_scripts.push(`'${pth}', \n`)
+                            scripts.client.push(`'${pth}', \n`)
                             record.push({ name: pth, type: "client" })
                             break
                         case "SH":
                             console.log("Pushing shared script")
-                            shared_scripts.push(`'${pth}', \n`)
+                            scripts.shared.push(`'${pth}', \n`)
                             record.push({ name: pth, type: "shared" })
                             break
                         case "UIP":
                             console.log("Pushing ui page")
                             ui_page = `'${pth}' \n`
                             record.push({ name: pth, type: "ui" })
-                            _files.push(`'${pth}', \n`) //have to add ui page as a file too
+                            scripts.files.push(`'${pth}', \n`) //have to add ui page as a file too
                             record.push({ name: pth, type: "file" })
                             break
                         case "FILE":
                             console.log("Pushing file")
-                            _files.push(`'${pth}', \n`)
+                            scripts.files.push(`'${pth}', \n`)
                             record.push({ name: pth, type: "file" })
                             break
                     }
@@ -109,11 +116,11 @@ try {
                             console.log("Found index.html, pusing it as UI page")
                             ui_page = `'${pth}' \n`
                             record.push({ name: pth, type: "ui" })
-                            _files.push(`'${pth}', \n`)
+                            scripts.files.push(`'${pth}', \n`)
                             record.push({ name: pth, type: "file" })
                         }
                         if (rp.includes(".ttf")) {
-                            _files.push(`'${pth}', \n`)
+                            scripts.files.push(`'${pth}', \n`)
                             record.push({ name: pth, type: "file" })
                         }
                         m = rp.match(/^.*?(?=\.)/) //we get everything before the first . symbol
@@ -125,17 +132,17 @@ try {
                         //switch statements didnt work here (because we dont check the string literally)
                         if (m.includes("server") || m.includes("SV")) {
                             console.log("Pushing server script")
-                            server_scripts.push(`'${pth}', \n`)
+                            scripts.server.push(`'${pth}', \n`)
                             record.push({ name: pth, type: "server" })
 
                         } else if (m.includes("client") || m.includes("CL")) {
                             console.log("Pushing client script")
-                            client_scripts.push(`'${pth}', \n`)
+                            scripts.client.push(`'${pth}', \n`)
                             record.push({ name: pth, type: "client" })
 
                         } else if (m.includes("shared") || m.includes("SH")) {
                             console.log("Pushing shared script")
-                            shared_scripts.push(`'${pth}', \n`)
+                            scripts.shared.push(`'${pth}', \n`)
                             record.push({ name: pth, type: "shared" })
                         } else {
                             if (!pth.includes("index.html") && !m.includes(".ttf")) {
@@ -198,7 +205,7 @@ fx_version "${replaceLast(metadata.fxv, " ", "")}"
 games {${replaceLast(metadata.game, " ", "")}}
 author "${replaceLast(metadata.auth, " ", "")}" 
 description "${replaceLast(metadata.descr, " ", "")}"
-${ui_page}files ${format(_files).join("")}client_scripts ${format(client_scripts).join("")}server_scripts ${format(server_scripts).join("")}shared_scripts ${format(shared_scripts).join("")}`
+${ui_page}files ${format(scripts.files).join("")}client_scripts ${format(scripts.client).join("")}server_scripts ${format(scripts.server).join("")}shared_scripts ${format(scripts.shared).join("")}`
     fs.writeFileSync(rel + "/fxmanifest.lua", final)
     try {
         if (!dat.instant && !dat.cli) {
@@ -312,7 +319,7 @@ try {
                             rawmanifest = rawmanifest.replace(/\r?\n?/g, '').replace(/\s\s+/g, ' ').replace(/\}/g, "}\n")
                                 //get all files that are already in the manifest
                             var pref = {}
-                            var dependencies = {}
+                            var externals = null
                                 //object like entries:
                             pref.clients = rawmanifest.match(/(?<=client_scripts {)(.*)(?=})/)
                             pref.servers = rawmanifest.match(/(?<=server_scripts {)(.*)(?=})/)
@@ -358,7 +365,6 @@ try {
                                 }
 
                             }
-                            console.log(dependencies)
                             var externals = {}
                             for (let [k, v] of Object.entries(pref)) {
                                 if (typeof v == "object" && v) {
@@ -374,6 +380,14 @@ try {
                             }
                             pref = null //this could be a large object, so manual gc
                             console.log(externals)
+                            for (const [k, v] of Object.entries(externals)) {
+                                console.log(`Currkey: ${k}`)
+                                v.forEach(ext => {
+                                    console.log(`Entry: ${ext}`)
+                                    scripts[k].push(`${ext.replace(/"/g, "'")},\n`)
+                                    record.push({ name: ext.replace(/"/g, ""), type: `${k} (exported)` })
+                                })
+                            }
                         } catch (err) {
                             console.log("Fxmanifest is probably empty or an error occured")
                             console.log(`Err: ${err}`)

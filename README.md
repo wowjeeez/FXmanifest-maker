@@ -17,7 +17,7 @@ If the filename includes: <br>
 `shared` OR `SH`: will be considered a shared script <br>
 **If the filename is `index.html` it will be considered as the UI page.** <br>
 
-If you open the `settings` (gear icon) tab you will see an option called *One click manifest creation*, if you enable that, the meta entries specified below will be used, skipping the manifest data and the finalizing page when creating a new manifest (so it will take less time to create it).
+If you open the `settings` (gear icon) tab you will see an option called *One click manifest creation*, if you enable that, the meta entries specified there will be used, skipping the manifest data and the finalizing page when creating a new manifest (so it will take less time to create it).
 # Incoming features
 #### -Preserving data from existing manifests (imported files, dependencies etc) \[author, description, version, gametype is already done] <br>
 #### -CLI (The system is done, it's just needs to be implemented (see `bin/cli.js`)

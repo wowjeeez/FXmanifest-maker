@@ -33,6 +33,7 @@ var dependencies = {}
 
 //var scripts.files = []
 var ui_page
+var loadscreen
 var record = []
 var metadata = {}
 var files //THIS IS NOT THE files {} entry!!!  centralized so all "global" variables are declared here
@@ -100,6 +101,13 @@ try {
                             scripts.files.push(`'${pth}', \n`)
                             record.push({ name: pth, type: "file" })
                             break
+                        case "LOADSCREEN":
+                            console.log("Pushing file")
+                            loadscreen = `'${pth}', \n`
+                            scripts.files.push(`'${pth}', \n`) //have to add ui page as a file too
+                            record.push({ name: pth, type: "loading screen" })
+                            record.push({ name: pth, type: "file" })
+                            break
                     }
                 } else {
                     if (getSetting("buildData", "readFromName") && metadata.filenames || metadata.filenames) {
@@ -112,7 +120,9 @@ try {
                         } else {
                             rp = pth
                         }
-                        if (rp == "index.html") {
+                        loadscreen = loadscreen || "" //piece of shit
+                        if (rp == "index.html" && !loadscreen.includes("index.html")) {
+                            loadscreen = loadscreen || undefined //reset the fuck back
                             console.log("Found index.html, pusing it as UI page")
                             ui_page = `'${pth}' \n`
                             record.push({ name: pth, type: "ui" })
@@ -198,6 +208,13 @@ const writeManif = function(ev, dat, cb = function() {}) {
         ui_page = "ui_page " + replaceLast(ui_page, " ", "")
     } else {
         ui_page = ""
+    }
+
+    if (loadscreen) {
+        console.log("Parsing loadscreen")
+        loadscreen = "loadscreen " + replaceLast(loadscreen, " ", "")
+    } else {
+        loadscreen = ""
     }
     //formatting the file
     var final = `--Made with: fxmanifest-maker (https://github.com/LedAndris/FXmanifest-maker)

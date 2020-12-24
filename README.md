@@ -7,6 +7,7 @@ To hook files, you need to include any of these in your files: (any filetype, wi
 `MANIF:SH` for shared scripts <br>
 `MANIF:FILE` for a standard file (`files`) entry <br>
 `MANIF:UIP` for the UI page <br>
+`MANIF:LOADSCREEN` for the loading screen page <br>
 Javascript example: <br>
 `//MANIF:CL`: will be considered as a client script
 ## Determining entry type from filenames:

@@ -7,7 +7,6 @@
         "pack": "electron-builder --core",
         "dist": "electron-builder",
         "release": "node release.js",
-        "buildbin": "electron-builder build"
     },
     "dependencies": {
         "chalk": "^4.1.0",

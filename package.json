@@ -6,7 +6,7 @@
         "start": "electron ./main.js",
         "pack": "electron-builder --core",
         "dist": "electron-builder",
-        "release": "node release.js",
+        "release": "node release.js"
     },
     "dependencies": {
         "chalk": "^4.1.0",

@@ -25,7 +25,7 @@ Download the installer binaries from the [Releases](https://github.com/LedAndris
 ### 2. CLI ("without" UI)
 You will need both npm and node installed.
 1. Clone this repo
-2. run the `npm i -g` command in that folder
+2. Run the `npm i -g` command in that folder
 (You can still access the UI, if you run the `npm start` command in the folder)
 ### 3. CLI & UI
 Easiest way is to do both steps, so you don't have to build electron manually.

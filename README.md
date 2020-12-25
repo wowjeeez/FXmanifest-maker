@@ -32,10 +32,10 @@ You will need both npm and node installed.
 Easiest way is to do both steps, so you don't have to build electron manually.
 # CLI USAGE
 To create a manifest in the current directory, use the `fxmanifest` command.
-Switches:
+**Switches:** <br>
 `-k`: Keep external files (`@` prefix) (default: *yes*) <br>
 `-f`: Use filenames too (default: *yes*) <br>
-Arguments:
+**Arguments:** <br>
 `-a`: Author (default: *Unknown*) <br>
 `-g`: Gametype (default: *gta5*) <br>
 `-d`: Description (default: *No description*) <br>

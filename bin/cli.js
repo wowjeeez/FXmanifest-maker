@@ -53,7 +53,7 @@ if (args.includes("-g")) {
 if (args.includes("-d")) {
     options.descr = args[args.indexOf("-d") + 1]
 } else {
-    options.descr = "Unknown"
+    options.descr = "No description"
 }
 if (args.includes("-fxv")) {
     options.fxv = args[args.indexOf("-fxv") + 1]

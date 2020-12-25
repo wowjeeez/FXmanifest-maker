@@ -31,7 +31,7 @@ You will need both npm and node installed.
 ### 3. CLI & UI
 Easiest way is to do both steps, so you don't have to build electron manually.
 # CLI USAGE
-To create a manifest in the current directory, use the `fxmanifest` command.
+To create a manifest in the current directory, use the `fxmanifest` command. <br>
 **Switches:** <br>
 `-k`: Keep external files (`@` prefix) (default: *yes*) <br>
 `-f`: Use filenames too (default: *yes*) <br>

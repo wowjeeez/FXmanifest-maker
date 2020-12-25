@@ -33,7 +33,7 @@ if (args.includes("-f")) {
     options.filenames = true
 }
 if (args.includes("-a")) {
-    options.auth = args[args.indexOf("-a") + 1]
+    options.auth = args[args.indexOf("-a") + 1] //super smort
 } else {
     options.auth = "Unknown"
 }

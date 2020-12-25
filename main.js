@@ -222,7 +222,7 @@ fx_version "${replaceLast(metadata.fxv, " ", "")}"
 games {${replaceLast(metadata.game, " ", "")}}
 author "${replaceLast(metadata.auth, " ", "")}" 
 description "${replaceLast(metadata.descr, " ", "")}"
-${ui_page}files ${format(scripts.files).join("")}client_scripts ${format(scripts.client).join("")}server_scripts ${format(scripts.server).join("")}shared_scripts ${format(scripts.shared).join("")}`
+dependencies ${format(dependencies).join("")}${ui_page}files ${format(scripts.files).join("")}client_scripts ${format(scripts.client).join("")}server_scripts ${format(scripts.server).join("")}shared_scripts ${format(scripts.shared).join("")}`
     fs.writeFileSync(rel + "/fxmanifest.lua", final)
     try {
         if (!dat.instant && !dat.cli) {
@@ -236,6 +236,10 @@ ${ui_page}files ${format(scripts.files).join("")}client_scripts ${format(scripts
         }
         return true
     } catch (err) {}
+
+}
+
+function prefetch(event, args, cb = function() {}) {
 
 }
 
@@ -280,7 +284,7 @@ try {
         }
 
         app.whenReady().then(createWindow)
-            //handles app behavios or based on system events
+            //handles app behaviors based on system events
         app.on('window-all-closed', () => {
             if (process.platform !== 'darwin') {
                 app.quit()
@@ -332,6 +336,7 @@ try {
                             settings.description = descr
                             rawmanifest = rawmanifest.replace(/\(/g, " ") //sanitize
                             rawmanifest = rawmanifest.replace(/\)/g, " ")
+                            rawmanifest = rawmanifest.replace(/\t/g, "")
                             rawmanifest = rawmanifest.replace(/'/g, `"`) // will be much easier to work with
                             rawmanifest = rawmanifest.replace(/\r?\n?/g, '').replace(/\s\s+/g, ' ').replace(/\}/g, "}\n")
                                 //get all files that are already in the manifest
@@ -371,17 +376,44 @@ try {
                             for (let [k, v] of Object.entries(dependencies)) {
                                 if (v[0]) {
                                     dependencies[k] = v.toString()
-
+                                    v = v.toString()
                                     if (k != "s") { //this is a very asshole logic, it could be done much easier
                                         dependencies[k] = v.split(",")
                                     } else {
                                         dependencies[k] = dependencies[k].replace(/\s\s+/g, '')
-                                        dependencies[k] = dependencies[k].substring(0, dependencies[k].lastIndexOf(`"`)) + `"`
+                                        dependencies[k] = dependencies[k].substring(0, dependencies[k].lastIndexOf(`"`)) + `"` //this is useless probably
                                         dependencies["o"].push(dependencies[k])
                                     }
                                 }
 
                             }
+                            dependencies.s.forEach(e => {
+                                dependencies["o"].push(`${e}, \n`)
+                            })
+                            dependencies = dependencies["o"]
+                            let cache = []
+                            dependencies.forEach(e => {
+                                cache.push(`${e}, \n`)
+                            })
+                            dependencies = cache
+                            dependencies = dependencies.filter(function(item, index) {
+                                if (dependencies.indexOf(item) == index)
+                                    return item;
+                            })
+                            cache = []
+                            dependencies.forEach(e => {
+                                if (e != ", \n") {
+                                    cache.push(e)
+                                }
+                            })
+                            dependencies = cache
+                            console.log("DEPENDENCIES:")
+                            console.log(dependencies)
+                            dependencies.forEach((e, i, a) => {
+                                    dependencies[i] = e.replace(/"/g, "'")
+                                    record.push({ name: dependencies[i].replace(/'/g, "").replace(/,/g, ""), type: `dependency` })
+                                })
+                                //END OF DEPENDENCY REGISTRY
                             var externals = {}
                             for (let [k, v] of Object.entries(pref)) {
                                 if (typeof v == "object" && v) {
@@ -397,12 +429,15 @@ try {
                             }
                             pref = null //this could be a large object, so manual gc
                             console.log(externals)
-                            for (const [k, v] of Object.entries(externals)) {
+                            for (let [k, v] of Object.entries(externals)) {
+                                if (k.includes("serve")) { //came across a strange issue
+                                    k = "server"
+                                }
                                 console.log(`Currkey: ${k}`)
                                 v.forEach(ext => {
                                     console.log(`Entry: ${ext}`)
                                     scripts[k].push(`${ext.replace(/"/g, "'")},\n`)
-                                    record.push({ name: ext.replace(/"/g, ""), type: `${k} (exported)` })
+                                    record.push({ name: ext.replace(/"/g, ""), type: `${k} (external)` })
                                 })
                             }
                         } catch (err) {

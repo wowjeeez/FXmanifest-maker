@@ -30,5 +30,13 @@ You will need both npm and node installed.
 (You can still access the UI, if you run the `npm start` command in the folder)
 ### 3. CLI & UI
 Easiest way is to do both steps, so you don't have to build electron manually.
-# Incoming features
-#### -Preserving data from existing manifests (imported files, dependencies etc) \[author, description, version, gametype is already done] <br>
+# CLI USAGE
+To create a manifest in the current directory, use the `fxmanifest` command. <br>
+**Switches:** <br>
+`-k`: Keep external files (`@` prefix) (default: *yes*) <br>
+`-f`: Use filenames too (default: *yes*) <br>
+**Arguments:** <br>
+`-a`: Author (default: *Unknown*) <br>
+`-g`: Gametype (default: *gta5*) <br>
+`-d`: Description (default: *No description*) <br>
+`-fxv`: Fx version (default: *cerulean*) <br>

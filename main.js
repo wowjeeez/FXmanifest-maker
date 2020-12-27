@@ -277,7 +277,7 @@ try {
                     icon: 'build/icon.png',
                     backgroundColor: "#3e4247",
                 })
-                //win.webContents.openDevTools()
+                //win.webContents.openDevTools() //debug
             win.setMenuBarVisibility(false)
             win.loadFile('index.html')
             buildSettings(userdir) //exports werent working as imagined

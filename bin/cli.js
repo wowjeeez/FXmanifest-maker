@@ -3,7 +3,7 @@
 const readline = require("readline")
 const chalk = require('chalk')
 const ora = require('ora');
-const { handler, prebuild, writeManif } = require('../main')
+const { handler, prebuild, writeManif, prefetch } = require('../main')
 const currDir = process.cwd()
 const { table } = require('table');
 const { allowedNodeEnvironmentFlags } = require("process");

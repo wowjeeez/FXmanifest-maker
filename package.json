@@ -14,5 +14,7 @@
     },
     "bin": {
         "fxmanifest": "./dist/index.js"
-    }
+    },
+    "types": "index.d.ts",
+    "prepublish": "tsc"
 }

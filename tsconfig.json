@@ -6,6 +6,7 @@
         "noImplicitAny": true,
         "experimentalDecorators": true,
         "moduleResolution": "node",
+        "declaration": true,
         "sourceMap": true,
         "strict": true,
         "outDir": "dist",

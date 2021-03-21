@@ -27,9 +27,23 @@ let leftOut: number = 0
 inquirer.prompt([pathQuestion, fileNameQuestion, authorQuestion, ignoreDirsQuestion, ignoreExtQuestion])
   .then(async (answers: { [key: string]: any }) => {
   answers["path"] = answers["path"].replace(/\\/g, "/")
-  console.log(chalk.yellow(`Checking files in directoy: ${answers["path"]}`))
-  const dirIgnores = answers["ignoreDir"].replace(/\s/g, "").split(",")
-  const extIgnores = answers["ignoreExt"].replace(/\s/g, "").split(",")
+    console.log(chalk.yellow(`Checking files in directoy: ${answers["path"]}`))
+    let dirIgnores = []
+    let extIgnores = []
+    
+    if (answers["ignoreDir"] == 0) {
+      dirIgnores = ["wontUseThisDirectoryBecauseItDoesntExist"]
+    } else {
+      dirIgnores =  answers["ignoreDir"].replace(/\s/g, "").split(",")
+    }
+    
+    if (answers["ignoreExt"] == 0) {
+      extIgnores = ["wontUseThisExtensionBecauseItDoesntExist"]
+    } else {
+      extIgnores = answers["ignoreExt"].replace(/\s/g, "").split(",")
+    }
+
+
 
   const start = Date.now()
   for await (const f of getFiles(answers["path"])) {

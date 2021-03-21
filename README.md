@@ -8,6 +8,7 @@ CLI tool to create manifest files for CFX.re projects, such as FiveM
 3. Run `npm i -g` 
 
 # Usage
+Run the `fxmanifest` command in your terminal. <br>
 If you want to include a file in the manifest include this in the file:
 TYPE:[ENTRY TYPE]
 ### Types:

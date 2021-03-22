@@ -18,7 +18,7 @@ TYPE:[ENTRY TYPE]
 
 ## Based on naming:
 If you enable the option to use file based entry determination, the following terms will apply: <br>
-If the file includes SV it will a server file, and so on. <br>
+If the file name includes `SV` (uppercased) it will be a server file, and so on. <br>
 If the file name is index.html it will be UI page. <br>
 
 # Data files:

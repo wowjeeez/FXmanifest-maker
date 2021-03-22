@@ -2,6 +2,7 @@
     "name": "fxmanifestmaker",
     "version": "1.0.0",
     "main": "index.js",
+    "author": "LedAndris",
     "license": "MIT",
     "scripts": {
         "build": "tsc",
@@ -14,6 +15,9 @@
     },
     "bin": {
         "fxmanifest": "./dist/index.js"
+    },
+    "devDependencies": {
+        "typescript": "^4.1.3"
     },
     "types": "index.d.ts",
     "prepublish": "tsc"

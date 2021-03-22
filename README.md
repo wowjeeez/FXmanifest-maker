@@ -3,9 +3,7 @@ CLI tool to create manifest files for CFX.re projects, such as FiveM
 
 # Installation
 (This package requires NPM)
-1. Clone the repo using `git clone https://github.com/LedAndris/FXmanifest-maker`
-2. Navigate into the repo's folder
-3. Run `npm i -g` 
+1. Run anywhere `npm i -g fxmanifestmaker` 
 
 # Usage
 Run the `fxmanifest` command in your terminal. <br>

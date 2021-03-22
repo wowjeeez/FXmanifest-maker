@@ -12,17 +12,13 @@ export async function writeManifest(path: string, entries: EntryFiles, author: s
       author '${author}'
 
       ui_page ${entries.UIP[0].replace(",", "")}
-      client_scripts {
-        ${format(entries.CL).join("")}}
+      client_scripts ${format(entries.CL).join("")}
 
-      server_scripts {
-          ${format(entries.SV).join("")}}
+      server_scripts ${format(entries.SV).join("")}
 
-      shared_scripts {
-            ${format(entries.SH).join("")}}
+      shared_scripts ${format(entries.SH).join("")}
 
-      files {
-              ${format(entries.FILE).join("")}}
+      files ${format(entries.FILE).join("")}
       ${"\n"}
       ${entries.DATA_FILES.join("\n")}
 

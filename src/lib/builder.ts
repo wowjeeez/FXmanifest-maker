@@ -2,6 +2,7 @@ import fs from "fs"
 import { EntryFiles } from "../typings"
 import {format} from "./"
 export async function writeManifest(path: string, entries: EntryFiles, author: string): Promise<void> {
+  console.log("NEW VERSION BITCH")
   return new Promise<void>((resolve, reject) => {
     fs.promises.writeFile(`${path}/fxmanifest.lua`,
       `
@@ -12,13 +13,13 @@ export async function writeManifest(path: string, entries: EntryFiles, author: s
       author '${author}'
 
       ui_page ${entries.UIP[0].replace(",", "")}
-      client_scripts ${format(entries.CL).join("")}
+      client_scripts ${format(entries.CL).join("\n")}
 
-      server_scripts ${format(entries.SV).join("")}
+      server_scripts ${format(entries.SV).join("\n")}
 
-      shared_scripts ${format(entries.SH).join("")}
+      shared_scripts ${format(entries.SH).join("\n")}
 
-      files ${format(entries.FILE).join("")}
+      files ${format(entries.FILE).join("\n")}
       ${"\n"}
       ${entries.DATA_FILES.join("\n")}
 

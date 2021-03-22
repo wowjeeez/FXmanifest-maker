@@ -10,7 +10,7 @@ import path from "path"
 const pathQuestion = { type: "input", name: "path", message: "Please input your resource path", default: process.cwd()}
 const fileNameQuestion = { type: "checkbox", name: "useNames", message: "Use filenames?", default: "yes", choices: [{ name: "yes", value: true}, { name: "no", value: false}]}
 const authorQuestion = { type: "input", name: "author", message: "Author:", default: os.hostname() } // this will be written in to the manifest directly
-const ignoreDirsQuestion = { type: "input", name: "ignoreDir", message: "Ignore the following directories, syntax: (dir1, dir2)", default: "node_modules" }
+const ignoreDirsQuestion = { type: "input", name: "ignoreDir", message: "Ignore the following directories, syntax: (dir1, dir2)", default: "node_modules, .git" }
 const ignoreExtQuestion = { type: "input", name: "ignoreExt", message: "Ignore the following extensions, syntax: (.extension1, extension2)", default: ".map" }
 
 
